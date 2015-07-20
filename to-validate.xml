@@ -1,0 +1,8 @@
+<Page xmlns="http://www.nativescript.org/tns.xsd" loaded="pageLoaded">
+    <StackLayout>
+      <Label text="The WebView component below will load a local HTML file with a path, starting with ~" cssClass="title"/>
+      <WebView src="{{ webViewUrl }}" minHeight="20" minWidth="20" loadFinished="{{ loadFinished }}"/>
+      <Label text="This is a label after the webview" />
+      <Switch checked="true" />
+  </StackLayout>
+</Page>
