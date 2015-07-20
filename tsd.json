@@ -17,9 +17,6 @@
     "node/node.d.ts": {
       "commit": "6f04d25ad38982d372cc3cda62fa4c0eef9e24d7"
     },
-    "typescript/typescript.d.ts": {
-      "commit": "6f04d25ad38982d372cc3cda62fa4c0eef9e24d7"
-    },
     "xml2js/xml2js.d.ts": {
       "commit": "38c6ccfde0e67ff10d7408e0ee8b7720b3f21d3b"
     },

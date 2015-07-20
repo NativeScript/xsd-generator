@@ -15,7 +15,7 @@ function main() {
     var theTree = fileWalker.buildTree([new ViewExtendersFilter()]);
 
     var theWriter = new JsonXsdWriter();
-    var rootProps = new Map([["id", "tns"],
+    var rootProps = new Map<string, string>([["id", "tns"],
                              ["xmlns:xs", "http://www.w3.org/2001/XMLSchema"],
                              ["targetNamespace", "http://www.nativescript.org/tns.xsd"],
                              ["xmlns", "http://www.nativescript.org/tns.xsd"],
