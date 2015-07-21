@@ -122,27 +122,29 @@ export class FileWalker {
     private _fillProperties(propertiesArray: lang.Property[], _class: ts.ClassDeclaration, sourceString: string) {
         _class.members.forEach((member) => {
 
-            var memberType = ts.SyntaxKind[member.kind];
             if (member.kind === ts.SyntaxKind.PropertyDeclaration) {
                 var propertyTypeString:string = null;
 
-                var classDeclaration = this._getClassDeclaration(member.type);
+//TODO: According to the TypeScript Declaration file a class member does not have a type property, however in reality it has!
+                var memberType:ts.TypeReferenceNode = (<any>member).type;
+
+                var classDeclaration = this._getClassDeclaration(memberType);
                 if (classDeclaration) {
                     propertyTypeString = this._getFullClassName(classDeclaration);
-                } else if (member.type.kind === ts.SyntaxKind.StringKeyword) {
+                } else if (memberType.kind === ts.SyntaxKind.StringKeyword) {
                     propertyTypeString = "string";
-                } else if (member.type.kind === ts.SyntaxKind.NumberKeyword) {
+                } else if (memberType.kind === ts.SyntaxKind.NumberKeyword) {
                     propertyTypeString = "number";
-                } else if (member.type.kind === ts.SyntaxKind.BooleanKeyword) {
+                } else if (memberType.kind === ts.SyntaxKind.BooleanKeyword) {
                     propertyTypeString = "boolean";
-                } else if (member.type.typeName && member.type.typeName.left) {
-                    propertyTypeString = member.type.typeName.left.text;
+                } else if ((<any>memberType).typeName && (<any>memberType.typeName).left) {
+                    propertyTypeString = (<any>memberType.typeName).left.text;
                 } else {
-                    propertyTypeString = sourceString.substring(member.type.pos, member.type.end).trim();
+                    propertyTypeString = sourceString.substring(memberType.pos, memberType.end).trim();
                 }
                 var type = new lang.Type(propertyTypeString);
 
-                var newProperty = new lang.Property(member.name.text, type);
+                var newProperty = new lang.Property((<any>member.name).text, type);
                 var adjustedProperty = this._adjustProperty(newProperty);
                 if (adjustedProperty) {
                     propertiesArray.push(adjustedProperty);
@@ -239,8 +241,9 @@ export class FileWalker {
         /// If for some reason there are two classes/interfaces with the same name, there is something strange!
         ///  re-check the code!
         if (meaningDeclarations.length > 1) {
-            if (meaningDeclarations[0].name.text === "Date") {
-                return meaningDeclarations[1];
+            /// But the Date class is declared as both a class an interface!
+            if ((<any>meaningDeclarations[0].name).text === "Date") {
+                return <ts.ClassDeclaration>meaningDeclarations[1];
             }
             throw new Error("A class has multiple declarations! Rework the code to handle this case!");
         }
@@ -269,7 +272,7 @@ export class FileWalker {
             if (hc.token === ts.SyntaxKind.ExtendsKeyword) {
                 //TODO: Ugly. What if another index holds the true type?
                 var hcType = hc.types[0];
-                return this._getClassDeclaration(hcType);
+                return this._getClassDeclaration(<any>hcType);
             }
             return null;
         }
