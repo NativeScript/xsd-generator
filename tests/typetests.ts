@@ -14,8 +14,7 @@ describe("Type.name", function(){
     });
     describe("created with an undefined value", function(){
         it("should return null", function(){
-            var theUndefined;
-            var myType = new Type(theUndefined);
+            var myType = new Type(void 0);
             should.not.exist(myType.name);
         });
     });

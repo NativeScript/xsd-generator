@@ -1,5 +1,5 @@
 import * as should from "should";
-import {Tree} from "../lib/lang-elements";
+import {Tree, Class} from "../lib/lang-elements";
 import {FileWalker} from "../lib/file-walker";
 import {ViewExtendersFilter} from "../lib/view-extenders-filter";
 import {InputHandler,Input} from "../lib/input";
@@ -13,10 +13,10 @@ describe("ViewExtendersFilter", () => {
     var builtTree: Tree = null;
     beforeEach(() => {
         var inputHandler = new InputHandler([]);
-        inputHandler.argsResolve = (rawArguments) => {
+        inputHandler.argsResolve = (rawArguments: string[]) => {
             return {
-                i: [],
-                f: [],
+                i: <string[]> [],
+                f: <string[]> [],
                 o: "schema.xsd",
                 r: "tests/resources"
             };
@@ -30,7 +30,7 @@ describe("ViewExtendersFilter", () => {
         it("should remove classes, marked with @private", () => {
 
             var classToBeFilteredName = "NativeViewGroup";
-            var existingClass = null;
+            var existingClass: Class = null;
             for (var i=0; i<builtTree.Classes.length; i++) {
                 var _class = builtTree.Classes[i];
                 if (_class.name === classToBeFilteredName) {
@@ -42,7 +42,7 @@ describe("ViewExtendersFilter", () => {
 
             var filter = new ViewExtendersFilter();
             var filteredClasses = filter.filter(builtTree.Classes);
-            var commentedWithPrivateClass = null;
+            var commentedWithPrivateClass: Class = null;
             for (var i=0; i<filteredClasses.length; i++) {
                 var filteredClass = filteredClasses[i];
                 if (filteredClass.name === classToBeFilteredName) {
@@ -55,7 +55,7 @@ describe("ViewExtendersFilter", () => {
 
         it("should remove classes, having no members", () => {
             var classToBeFilteredName = "CustomLayoutView";
-            var existingClass = null;
+            var existingClass: Class = null;
             for (var i=0; i<builtTree.Classes.length; i++) {
                 var _class = builtTree.Classes[i];
                 if (_class.name === classToBeFilteredName) {
@@ -67,7 +67,7 @@ describe("ViewExtendersFilter", () => {
 
             var filter = new ViewExtendersFilter();
             var filteredClasses = filter.filter(builtTree.Classes);
-            var havingNoMembersClass = null;
+            var havingNoMembersClass: Class = null;
             for (var i=0; i<filteredClasses.length; i++) {
                 var filteredClass = filteredClasses[i];
                 if (filteredClass.name === classToBeFilteredName) {
@@ -80,7 +80,7 @@ describe("ViewExtendersFilter", () => {
 
         it("should leave the ContentView class, though having no members", () => {
             var classToBeLeftFullName = '"ui/content-view".ContentView';
-            var existingClass = null;
+            var existingClass: Class = null;
             for (var i=0; i<builtTree.Classes.length; i++) {
                 var _class = builtTree.Classes[i];
                 if (_class.fullName === classToBeLeftFullName) {
@@ -92,7 +92,7 @@ describe("ViewExtendersFilter", () => {
 
             var filter = new ViewExtendersFilter();
             var filteredClasses = filter.filter(builtTree.Classes);
-            var contentViewClass = null;
+            var contentViewClass: Class = null;
             for (var i=0; i<filteredClasses.length; i++) {
                 var filteredClass = filteredClasses[i];
                 if (filteredClass.fullName === classToBeLeftFullName) {
@@ -105,7 +105,7 @@ describe("ViewExtendersFilter", () => {
 
         it("should filter classes, not inheriting View", () => {
             var classToBeFilteredName = "Bindable";
-            var existingClass = null;
+            var existingClass: Class = null;
             for (var i=0; i<builtTree.Classes.length; i++) {
                 var _class = builtTree.Classes[i];
                 if (_class.name === classToBeFilteredName) {
@@ -117,7 +117,7 @@ describe("ViewExtendersFilter", () => {
 
             var filter = new ViewExtendersFilter();
             var filteredClasses = filter.filter(builtTree.Classes);
-            var commentedWithPrivateClass = null;
+            var commentedWithPrivateClass: Class = null;
             for (var i=0; i<filteredClasses.length; i++) {
                 var filteredClass = filteredClasses[i];
                 if (filteredClass.name === classToBeFilteredName) {
@@ -131,7 +131,7 @@ describe("ViewExtendersFilter", () => {
         it("should return the view class", () => {
             var filter = new ViewExtendersFilter();
             var filteredClasses = filter.filter(builtTree.Classes);
-            var viewClass = null;
+            var viewClass: Class = null;
             for (var i=0; i<filteredClasses.length; i++) {
                 var filteredClass = filteredClasses[i];
                 if (filteredClass.name === "View") {
