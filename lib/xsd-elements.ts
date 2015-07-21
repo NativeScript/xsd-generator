@@ -7,28 +7,28 @@ export class ValidatorFactory {
     private _validatorIndex: Map<string, Validator>;
 
     public constructor() {
-        this._registeredValidators = <Map<string, Validator>>{};
-        this._validatorIndex = <Map<string, Validator>>{};
+        this._registeredValidators = new Map<string, Validator>();
+        this._validatorIndex = new Map<string, Validator>();
 
         //Register the initial validators that are core type-dependent:
         this.getValidator(new Type("Binding"));
     }
 
-    public getValidator(type: Type) {
-        if (!this.registeredValidators[type.fullName]) {
+    public getValidator(type: Type): Validator {
+        if (!this.registeredValidators.has(type.fullName)) {
             var newValidator = this._createValidator(type);
-            this.registeredValidators[type.fullName] = newValidator;
+            this.registeredValidators.set(type.fullName, newValidator);
             return this.getValidator(type);
         }
 
-        return this.registeredValidators[type.fullName];
+        return this.registeredValidators.get(type.fullName);
     }
 
     public getRegisteredValidators(): Validator[] {
         var returnValue = <Validator[]>[];
         var allRegisteredValidatorTypes = Object.keys(this.validatorsIndex);
         allRegisteredValidatorTypes.forEach((validatorName) => {
-            returnValue.push(this.validatorsIndex[validatorName]);
+            returnValue.push(this.validatorsIndex.get(validatorName));
         });
 
         return returnValue;
@@ -39,11 +39,11 @@ export class ValidatorFactory {
     }
 
     private _retrieveValidator(validatorName: string, validatorCreator: Func0<Validator>): Validator {
-        if (this.validatorsIndex[validatorName]) {
-            return this.validatorsIndex[validatorName];
+        if (this.validatorsIndex.has(validatorName)) {
+            return this.validatorsIndex.get(validatorName);
         }
-        this.validatorsIndex[validatorName] = validatorCreator();
-        return this.validatorsIndex[validatorName];
+        this.validatorsIndex.set(validatorName, validatorCreator());
+        return this.validatorsIndex.get(validatorName);
     }
 
     private get registeredValidators(): Map<string, Validator> {
@@ -51,7 +51,7 @@ export class ValidatorFactory {
     }
 
     //TODO: Make this more intelligent:
-    private _createValidator(type: Type):Validator {
+    private _createValidator(type: Type): Validator {
         switch (type.fullName) {
             case "number":
                 return this._retrieveValidator("NumberValidator", () => { return new NumberValidator() });

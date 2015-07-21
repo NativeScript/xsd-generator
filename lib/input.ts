@@ -55,7 +55,7 @@ export class InputHandler {
         }
 
         var outputFilterPatterns = typedArgs['f'] || [];
-        outputFilterPatterns.forEach(function(pattern, index) {
+        outputFilterPatterns.forEach(function(pattern: string, index: number) {
             outputFilterPatterns[index] = "!" + pattern;
         });
 
@@ -76,7 +76,7 @@ export class InputHandler {
 
     public get argsResolve() {
         if (this._argsResolve == null) {
-            this._argsResolve = function(rawArguments) {
+            this._argsResolve = function(rawArguments: string[]) {
                 var callArgsOnly:string[] = rawArguments.slice(2);
                 var parsedArgs = parseArgs(callArgsOnly);
                 var typedArgs = parameterAdjuster.parse(parsedArgs).coerce("i", "array").coerce("f", "array").coerce("r", "string").coerce("o", "string").values();
@@ -98,7 +98,7 @@ export class InputHandler {
         return filePath.replace("\\", "/");
     }
 
-    private _filterNonPublicAPIs(root, filePaths: string[]): string[] {
+    private _filterNonPublicAPIs(root: string, filePaths: string[]): string[] {
         return filePaths.filter((fp) => {
             if (fp.length <= 5 || fp.substr(fp.length - 3) != ".ts") {
                 console.log("Non-.ts file detected. XSD Generator only reads TypeScript files");
@@ -111,8 +111,8 @@ export class InputHandler {
         });
     }
 
-    private _expandGlobs(root, patterns):string[] {
-        var result = [];
+    private _expandGlobs(root: string, patterns: string[]):string[] {
+        var result: string[] = [];
         patterns.forEach(function(pattern) {
             var exclusion = pattern.indexOf('!') === 0;
             if (exclusion) {
