@@ -1,7 +1,7 @@
 import * as should from "should";
 import {join as pathJoin} from "path";
 import {existsSync as fsExists} from "fs";
-import {Type, Class, Tree} from "../lib/lang-elements";
+import {Type, Class, Tree, Property} from "../lib/lang-elements";
 import {FileWalker} from "../lib/file-walker";
 import {InputHandler,Input} from "../lib/input";
 import {JsonXsdWriter} from "../lib/json-xsd-writer";
@@ -18,10 +18,10 @@ describe("Walking and outputting", () => {
     var allInput: Input = null;
     before(() => {
         var inputHandler = new InputHandler([]);
-        inputHandler.argsResolve = (rawArguments) => {
+        inputHandler.argsResolve = (rawArguments: string[]) => {
             return {
-                i: [],
-                f: [],
+                i: <string[]> [],
+                f: <string[]> [],
                 o: "schema.xsd",
                 r: "tests/resources"
             };
@@ -32,15 +32,18 @@ describe("Walking and outputting", () => {
 
     var adjustPropertyTypeNames = function(classes: Class[]) {
         classes.forEach((_class) => {
-            _class.properties.forEach((prop) => {
+            _class.properties.forEach((prop, index, arr) => {
                 if (prop.type.fullName === "color") {
-                    prop.type._fullName = '"color".Color';
+                    var newProp = new Property('"color".Color', prop.type);
+                    arr[index] = newProp;
                 }
                 if (prop.type.fullName === "layoutModule") {
-                    prop.type._fullName = '"ui/layouts/layout".Layout';
+                    var newProp = new Property('"ui/layouts/layout".Layout', prop.type);
+                    arr[index] = newProp;
                 }
                 if (prop.type.fullName === "formattedString") {
-                    prop.type._fullName = '"text/formatted-string".FormattedString';
+                    var newProp = new Property('"text/formatted-string".FormattedString', prop.type);
+                    arr[index] = newProp;
                 }
             });
         });
@@ -66,8 +69,8 @@ describe("Walking and outputting", () => {
             var content = writer.parse("someRoot", tree);
 
             parseString(content, (err, data) => {
-                data.someRoot["xs:simpleType"].forEach((searchedValidator) => {
-                    var searchedValidatorInstances = data.someRoot["xs:simpleType"].filter((validator) => {
+                data.someRoot["xs:simpleType"].forEach((searchedValidator: any) => {
+                    var searchedValidatorInstances = data.someRoot["xs:simpleType"].filter((validator: any) => {
                         if (validator["$"].name === searchedValidator["$"].name) {
                             return true;
                         }
@@ -87,7 +90,7 @@ describe("Walking and outputting", () => {
             var content = writer.parse("someRoot", tree);
 
             parseString(content, (err, data) => {
-                var sliderTypeArray = data.someRoot["xs:complexType"].filter((complexType) => {
+                var sliderTypeArray = data.someRoot["xs:complexType"].filter((complexType: any) => {
                     return complexType.$.name === "Slider";
                 });
                 var sliderType = sliderTypeArray[0];
@@ -107,7 +110,7 @@ describe("Walking and outputting", () => {
             var content = writer.parse("someRoot", tree);
 
             parseString(content, (err, data) => {
-                var viewTypeArray = data.someRoot["xs:complexType"].filter((complexType) => {
+                var viewTypeArray = data.someRoot["xs:complexType"].filter((complexType: any) => {
                     return complexType.$.name === "View";
                 });
                 var viewType = viewTypeArray[0];
