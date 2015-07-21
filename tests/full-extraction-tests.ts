@@ -34,15 +34,15 @@ describe("Walking and outputting", () => {
         classes.forEach((_class) => {
             _class.properties.forEach((prop, index, arr) => {
                 if (prop.type.fullName === "color") {
-                    var newProp = new Property('"color".Color', prop.type);
+                    var newProp = new Property(prop.name, new Type('"color".Color'));
                     arr[index] = newProp;
                 }
                 if (prop.type.fullName === "layoutModule") {
-                    var newProp = new Property('"ui/layouts/layout".Layout', prop.type);
+                    var newProp = new Property(prop.name, new Type('"ui/layouts/layout".Layout'));
                     arr[index] = newProp;
                 }
                 if (prop.type.fullName === "formattedString") {
-                    var newProp = new Property('"text/formatted-string".FormattedString', prop.type);
+                    var newProp = new Property(prop.name, new Type('"text/formatted-string".FormattedString'));
                     arr[index] = newProp;
                 }
             });

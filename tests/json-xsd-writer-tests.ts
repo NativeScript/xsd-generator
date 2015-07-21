@@ -1,5 +1,5 @@
 import * as should from "should";
-import {JsonXsdWriter} from "../lib/json-xsd-writer";
+import {JsonXsdWriter, ValidatorWriter} from "../lib/json-xsd-writer";
 import {Tree, Class, Property, Type} from "../lib/lang-elements";
 import * as XmlWriter from "xml-writer";
 import {Validator, Restriction} from "../lib/xsd-elements";
@@ -82,22 +82,15 @@ describe("JsonXsdWriter", () => {
 
         });
     });
-    describe("getPropertyValidator method", () => {
-        it("should return a StringValidator when the type of the property is string", () => {
-            var writer = new JsonXsdWriter();
-            var propertyType = new Type("string");
-
-            writer._getPropertyValidatorName(propertyType).should.eql("StringValidator");
-        });
-    });
-    describe("writeValidator method", () => {
+});
+describe("ValidatorWriter", () => {
+    describe("write method", () => {
         it("should write its simplest form when all properties null", () => {
             var xmlWriter = new (<any>XmlWriter)(true);
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new JsonXsdWriter();
-            writer.writeValidator(xmlWriter, new Validator(new Type("string"), null, null));
+            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), null, null));
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -109,8 +102,7 @@ describe("JsonXsdWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new JsonXsdWriter();
-            writer.writeValidator(xmlWriter, new Validator(new Type("string"), <string[]>[], null));
+            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), <string[]>[], null));
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -122,8 +114,8 @@ describe("JsonXsdWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new JsonXsdWriter();
-            writer.writeValidator(xmlWriter, new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], null));
+            var writer = new ValidatorWriter();
+            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], null));
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -135,8 +127,8 @@ describe("JsonXsdWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new JsonXsdWriter();
-            writer.writeValidator(xmlWriter, new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], new Restriction("xs:string", null, null, null)));
+            var writer = new ValidatorWriter();
+            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], new Restriction("xs:string", null, null, null)));
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -148,8 +140,8 @@ describe("JsonXsdWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new JsonXsdWriter();
-            writer.writeValidator(xmlWriter, new Validator(new Type("string"), null, new Restriction("xs:string", null, null, null)));
+            var writer = new ValidatorWriter();
+            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), null, new Restriction("xs:string", null, null, null)));
 
             xmlWriter.endElement();
             xmlWriter.endDocument();

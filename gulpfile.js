@@ -1,7 +1,7 @@
 var gulp = require("gulp");
 var ts = require("gulp-typescript");
 
-var tsSrc = ["bin/**/*.ts", "lib/**/*.ts", "tests/**/*.ts", "typings/**/*.ts", "customtypings/**/*.ts"];
+var tsSrc = ["bin/**/*.ts", "lib/**/*.ts", "tests/**/*.ts", "typings/**/*.ts", "customtypings/**/*.ts", "!tests/resources/**/*.*"];
 var outDir = "./dist";
 
 gulp.task("default", function() {

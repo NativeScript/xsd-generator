@@ -44,7 +44,7 @@ export class JsonXsdWriter {
         _class.properties.forEach((property) => {
             writer.startElement("xs:attribute");
             writer.writeAttribute("name", property.name);
-            writer.writeAttribute("type", this._getPropertyValidatorName(property.type));
+            writer.writeAttribute("type", this.validatorFactory.getValidator(property.type).name);
             writer.endElement();
         });
         writer.endElement();
@@ -52,17 +52,8 @@ export class JsonXsdWriter {
 
     private writeValidators(writer: any, validators: Validator[]) {
         validators.forEach((validator) => {
-            this.writeValidator(writer, validator);
+            ValidatorWriter.write(writer, validator);
         });
-    }
-
-    private writeValidator(writer: any, validator: Validator) {
-        ValidatorWriter.write(writer, validator);
-    }
-
-    private _getPropertyValidatorName(propertyType: Type): string {
-        var validator = this.validatorFactory.getValidator(propertyType);
-        return validator.name;
     }
 
     private _addClassType(writer: any, _class: Class) {

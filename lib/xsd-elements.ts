@@ -9,7 +9,7 @@ export class ValidatorFactory {
     public constructor() {
         this._registeredValidators = new Map<string, Validator>();
         this._validatorIndex = new Map<string, Validator>();
-
+debugger;
         //Register the initial validators that are core type-dependent:
         this.getValidator(new Type("Binding"));
     }
@@ -26,11 +26,9 @@ export class ValidatorFactory {
 
     public getRegisteredValidators(): Validator[] {
         var returnValue = <Validator[]>[];
-        var allRegisteredValidatorTypes = Object.keys(this.validatorsIndex);
-        allRegisteredValidatorTypes.forEach((validatorName) => {
-            returnValue.push(this.validatorsIndex.get(validatorName));
+        var allRegisteredValidatorTypes = this.validatorsIndex.forEach((validator) => {
+            returnValue.push(validator);
         });
-
         return returnValue;
     }
 
