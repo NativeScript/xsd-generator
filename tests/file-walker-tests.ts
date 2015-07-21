@@ -15,10 +15,10 @@ describe("InputHandler run", () => {
     describe("on all files", () => {
         it("should list only non-private files", () => {
             var inputHandler = new InputHandler([]);
-            inputHandler.argsResolve = (rawArguments) => {
+            inputHandler.argsResolve = (rawArguments: string[]) => {
                 return {
-                    i: [],
-                    f: [],
+                    i: <string[]> [],
+                    f: <string[]> [],
                     o: "schema.xsd",
                     r: "tests/resources"
                 };
@@ -48,10 +48,10 @@ describe("FileWalker", () => {
     var allInput: Input = null;
     before(() => {
         var inputHandler = new InputHandler([]);
-        inputHandler.argsResolve = (rawArguments) => {
+        inputHandler.argsResolve = (rawArguments: string[]) => {
             return {
-                i: [],
-                f: [],
+                i: <string[]> [],
+                f: <string[]> [],
                 o: "schema.xsd",
                 r: "tests/resources"
             };
@@ -66,7 +66,7 @@ describe("FileWalker", () => {
         });
         it("should contain View class", () => {
             var tree = fileWalker.buildTree();
-            var searchedClass = null;
+            var searchedClass: Class = null;
             for (var i=0; i<tree.Classes.length; i++) {
                 var _class = tree.Classes[i];
                 if (_class.name === "View") {
@@ -78,7 +78,7 @@ describe("FileWalker", () => {
         });
         it("should fill all full base class names", () => {
             var tree = fileWalker.buildTree();
-            var labelClass = null;
+            var labelClass: Class = null;
             for (var i=0; i<tree.Classes.length; i++) {
                 var _class = tree.Classes[i];
                 if (_class.name === "Label") {
@@ -95,7 +95,7 @@ describe("FileWalker", () => {
         });
         it("should fill class comments", () => {
             var tree = fileWalker.buildTree();
-            var searchedClass = null;
+            var searchedClass: Class = null;
             for (var i=0; i<tree.Classes.length; i++) {
                 var _class = tree.Classes[i];
                 if (_class.name === "View") {
@@ -108,7 +108,7 @@ describe("FileWalker", () => {
         });
         it("should retrieve the full class name", () => {
             var tree = fileWalker.buildTree();
-            var searchedClass = null;
+            var searchedClass: Class = null;
             for (var i=0; i<tree.Classes.length; i++) {
                 var _class = tree.Classes[i];
                 if (_class.name === "View") {
@@ -210,7 +210,7 @@ describe("FileWalker", () => {
         });
         it("should have View class properties filled", () => {
             var tree = fileWalker.buildTree();
-            var searchedClass = null;
+            var searchedClass: Class = null;
             for (var i=0; i<tree.Classes.length; i++) {
                 var _class = tree.Classes[i];
                 if (_class.name === "View") {
@@ -263,7 +263,7 @@ describe("FileWalker", () => {
     describe("run with ViewExtendersFilter", () => {
         it("should filter classes that either do not inherit View or View itself", () => {
             var tree = fileWalker.buildTree([new ViewExtendersFilter()]);
-            var searchedClass = null;
+            var searchedClass: Class = null;
             var nonViewInheritingClasses = tree.Classes.filter((_class) => {
                 if (_class.fullName === '"ui/core/view".View') {
                     return false;
