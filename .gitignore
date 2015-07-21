@@ -1,5 +1,5 @@
 dist/
-typings/
+/typings/**/*.*
 node_modules/
 
-!typings/tsd.d.ts
+!/typings/tsd.d.ts
