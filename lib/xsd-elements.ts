@@ -72,6 +72,7 @@ debugger;
             case '"ui/action-bar".NavigationButton':
             case '"ui/action-bar".ActionItems':
             case '"ui/page".Page':
+            case '"ui/action-bar".ActionBar':
                 return this._retrieveValidator("StringValidator", () => { return new StringValidator() });
             default:
                 throw new Error(`No validator for type ${type.fullName}!`);
@@ -147,7 +148,7 @@ export class Validator {
 
 class BindingValidator extends Validator {
     constructor() {
-        super(new Type("Binding"), null, new Restriction("xs:string", "\\{\\{.*?\\}\\}", "collapse", null));
+        super(new Type("Binding"), null, new Restriction("xs:string", "\\{\\{.*\\}\\}", "collapse", null));
     }
 }
 

@@ -27,3 +27,4 @@ $executable dist/bin/generate-xsd.js -r ./theinputs -o ./schema.xsd
 
 rm -rf $localinputsdir
 
+./validate.sh
