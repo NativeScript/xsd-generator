@@ -13,10 +13,6 @@ export class ViewExtendersFilter implements IClassFilter{
                 return false;
             }
 
-            // Filter classes with no properties:
-            if (_class.properties.length === 0 && _class.fullName !== '"ui/content-view".ContentView') {
-                return false;
-            }
 
             // Filter classes that do not have View in their list of base classes:
             var viewClassName = '"ui/core/view".View';
@@ -29,6 +25,7 @@ export class ViewExtendersFilter implements IClassFilter{
 
             switch (_class.fullName) {
                 case '"ui/frame".Frame':
+                case '"ui/core/view".CustomLayoutView':
                     return false;
                 default:
                     return true;

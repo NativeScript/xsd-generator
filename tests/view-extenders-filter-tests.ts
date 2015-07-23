@@ -53,31 +53,6 @@ describe("ViewExtendersFilter", () => {
             should(commentedWithPrivateClass).be.eql(null);
         });
 
-        it("should remove classes, having no members", () => {
-            var classToBeFilteredName = "CustomLayoutView";
-            var existingClass: Class = null;
-            for (var i=0; i<builtTree.Classes.length; i++) {
-                var _class = builtTree.Classes[i];
-                if (_class.name === classToBeFilteredName) {
-                    existingClass = _class;
-                    break;
-                }
-            }
-            existingClass.should.not.eql(null);
-
-            var filter = new ViewExtendersFilter();
-            var filteredClasses = filter.filter(builtTree.Classes);
-            var havingNoMembersClass: Class = null;
-            for (var i=0; i<filteredClasses.length; i++) {
-                var filteredClass = filteredClasses[i];
-                if (filteredClass.name === classToBeFilteredName) {
-                    havingNoMembersClass = filteredClass;
-                    break;
-                }
-            }
-            should(havingNoMembersClass).be.eql(null);
-        });
-
         it("should leave the ContentView class, though having no members", () => {
             var classToBeLeftFullName = '"ui/content-view".ContentView';
             var existingClass: Class = null;
