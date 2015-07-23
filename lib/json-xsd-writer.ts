@@ -23,6 +23,7 @@ export class JsonXsdWriter {
 
         this.processClasses(writer, tree.Classes);
         this.writeValidators(writer, this.validatorFactory.getRegisteredValidators());
+        this.writeUIComponents(writer, tree.Classes);
         writer.endDocument();
         return writer.toString();
     }
@@ -42,10 +43,12 @@ export class JsonXsdWriter {
         writer.startElement("xs:attributeGroup");
         writer.writeAttribute("name", this._getClassAttributesRefName(_class));
         _class.properties.forEach((property) => {
-            writer.startElement("xs:attribute");
-            writer.writeAttribute("name", property.name);
-            writer.writeAttribute("type", this.validatorFactory.getValidator(property.type).name);
-            writer.endElement();
+            if (!this._checkOverridenProperty(property, _class)) {
+                writer.startElement("xs:attribute");
+                writer.writeAttribute("name", property.name);
+                writer.writeAttribute("type", this.validatorFactory.getValidator(property.type).name);
+                writer.endElement();
+            }
         });
         writer.endElement();
     }
@@ -54,6 +57,36 @@ export class JsonXsdWriter {
         validators.forEach((validator) => {
             ValidatorWriter.write(writer, validator);
         });
+    }
+
+    private writeUIComponents(writer: any, _classes: Class[]) {
+        writer.startElement("xs:group");
+        writer.writeAttribute("name", "UIComponents");
+        writer.startElement("xs:choice");
+
+        _classes.forEach((_class) => {
+            writer.startElement("xs:element");
+            writer.writeAttribute("name", _class.name);
+            writer.writeAttribute("type", _class.name);
+            writer.endElement();
+        });
+
+        writer.endElement();
+        writer.endElement();
+    }
+
+    // TODO: There are properties, that are declared in both the parent and child type.
+    //  These are handled via a restriction tag (http://stackoverflow.com/questions/13952721/how-to-override-xsd-element-inside-of-parent-extended-element),
+    //  however, they are the same in our situation. Simply remove them for the time being:
+    private _checkOverridenProperty(prop: Property, _class: Class): boolean {
+        if ((prop.name === "borderColor" || prop.name === "borderWidth") && _class.fullName === '"ui/border".Border') {
+            return true;
+        }
+        if ((prop.name === "paddingBottom" || prop.name === "paddingTop"
+                    || prop.name === "paddingLeft" || prop.name === "paddingRight") && _class.fullName === '"ui/layouts/layout".Layout') {
+            return true;
+        }
+        return false;
     }
 
     private _addClassType(writer: any, _class: Class) {
@@ -68,6 +101,19 @@ export class JsonXsdWriter {
             writer.startElement("xs:extension");
 
             writer.writeAttribute("base", _class.baseClassNames[0].name);
+
+            //TODO: The ContentView class is a special class that can have content (and such are its inheritors like Page, Layout, etc).
+            // This might be done in a better manner - create a special class with specific rendering for example?
+            if (_class.fullName === '"ui/content-view".ContentView') {
+                writer.startElement("xs:sequence");
+                writer.startElement("xs:group");
+
+                writer.writeAttribute("ref", "UIComponents");
+                writer.writeAttribute("maxOccurs", "1");
+
+                writer.endElement();
+                writer.endElement();
+            }
             this._addClassAttributeGroup(writer, _class);
 
             writer.endElement();
