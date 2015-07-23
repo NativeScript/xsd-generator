@@ -102,14 +102,18 @@ export class JsonXsdWriter {
 
             writer.writeAttribute("base", _class.baseClassNames[0].name);
 
-            //TODO: The ContentView class is a special class that can have content (and such are its inheritors like Page, Layout, etc).
+            //TODO: The ContentView and Layout classes are special classes that can have content (and such are their inheritors like Page, ScrollView, StackLayout, etc).
             // This might be done in a better manner - create a special class with specific rendering for example?
-            if (_class.fullName === '"ui/content-view".ContentView') {
+            if (_class.fullName === '"ui/content-view".ContentView' || _class.fullName === '"ui/layouts/layout".Layout') {
                 writer.startElement("xs:sequence");
                 writer.startElement("xs:group");
 
                 writer.writeAttribute("ref", "UIComponents");
-                writer.writeAttribute("maxOccurs", "1");
+                if (_class.fullName === '"ui/content-view".ContentView') {
+                    writer.writeAttribute("maxOccurs", "1");
+                } else {
+                    writer.writeAttribute("maxOccurs", "unbounded");
+                }
 
                 writer.endElement();
                 writer.endElement();
