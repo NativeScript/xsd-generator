@@ -12,10 +12,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "gulp": "3.9.0",
-    "gulp-typescript": "2.7.8",
+    "gulp-typescript": "2.8.0",
     "mocha": "2.2.5",
-    "should": "7.0.1",
-    "typescript": "1.5.0-beta",
+    "should": "7.0.2",
+    "typescript": "1.5.3",
     "xml2js": "0.4.9"
   },
   "dependencies": {

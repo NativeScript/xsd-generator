@@ -14,7 +14,7 @@ fi
 node_modules/mocha/bin/mocha $mochadebug dist/tests/*.js
 
 nsrepodir=/Users/erjan/work/github/nativescript/nativescript
-packagename=tns-definitions-1.2.0.tgz
+packagename=tns-definitions-1.3.0.tgz
 localinputsdir=theinputs
 #(cd $nsrepodir && grunt --runtslint=false)
 cp $nsrepodir/bin/dist/$packagename .
