@@ -25,7 +25,6 @@ export class ViewExtendersFilter implements IClassFilter{
 
             switch (_class.fullName) {
                 case '"ui/frame".Frame':
-                case '"ui/core/view".CustomLayoutView':
                     return false;
                 default:
                     return true;
