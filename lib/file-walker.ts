@@ -210,7 +210,8 @@ export class FileWalker {
     }
 
     private _getFullClassName(_class: ts.ClassDeclaration): string {
-        return this.typeChecker.getFullyQualifiedName(_class.symbol);
+        //HACK: get the nonpublic symbol from the class declaration
+        return this.typeChecker.getFullyQualifiedName((<any>_class).symbol);
     }
 
     private _fillBaseClassNames(_class: ts.ClassDeclaration, classNames?: lang.Type[]): lang.Type[] {
