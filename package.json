@@ -15,6 +15,7 @@
     "gulp-typescript": "2.8.0",
     "mocha": "2.2.5",
     "should": "7.0.2",
+    "tsd": "0.6.3",
     "typescript": "1.5.3",
     "xml2js": "0.4.9"
   },
