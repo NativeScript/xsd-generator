@@ -7,6 +7,7 @@ var outDir = "./dist";
 gulp.task("default", function() {
     var tsResult = gulp.src(tsSrc).pipe(
             ts({
+                noEmitOnError: true,
                 noImplicitAny: true,
                 outDir: outDir,
                 removeComments: true,
