@@ -11,5 +11,11 @@
           <Label text="This is a label after the webview" />
         </ListView.itemTemplate>
       </ListView>
+      <TabView>
+        <TabView.items>
+          <TabViewItem title="fafla" />
+          <TabViewItem title="fafla2" />
+        </TabView.items>
+      </TabView>
   </StackLayout>
 </Page>

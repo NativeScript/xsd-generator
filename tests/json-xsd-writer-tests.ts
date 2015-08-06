@@ -1,5 +1,11 @@
 import * as should from "should";
-import {JsonXsdWriter, ValidatorWriter, ClassWriter, ItemTemplateWriter} from "../lib/json-xsd-writer";
+import {
+    JsonXsdWriter,
+    ValidatorWriter,
+    ClassWriter,
+    ItemTemplateWriter,
+    HardCodedItemsWriter
+} from "../lib/json-xsd-writer";
 import {Tree, Class, Property, Type} from "../lib/lang-elements";
 import * as XmlWriter from "xml-writer";
 import {Validator, Restriction} from "../lib/xsd-elements";
@@ -190,5 +196,19 @@ describe("ClassWriter", () => {
         var nonTemplatedClass = new Class("Button", '"ui/button".Button', "Class1Comments", [new Type("View")]);
         let classWriterNoTemplate = new ClassWriter(nonTemplatedClass, null);
         (classWriterNoTemplate.itemTemplateWriter == null).should.be.true;
+    });
+
+    it("should create HardCodedItemsWriter, if needed", () => {
+        var templatedClasses = [
+            new Class("TabView", '"ui/tab-view".TabView', "Class1Comments", [new Type("View")]),
+            new Class("SegmentedBar", '"ui/segmented-bar".SegmentedBar', "Class1Comments", [new Type("View")]),
+        ];
+
+        templatedClasses.forEach((_class) => {
+            let classWriter = new ClassWriter(_class, null)
+            let itemsWriter = classWriter.hardCodedItemsWriter;
+            itemsWriter.should.not.eql(null);
+            itemsWriter.elementName.should.eql(_class.name + ".items");
+        });
     });
 });

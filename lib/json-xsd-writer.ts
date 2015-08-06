@@ -93,6 +93,42 @@ export class UIComponentWriter {
     }
 }
 
+export class HardCodedItemsWriter {
+    public elementName: string;
+
+    public constructor(public className: string) {
+        this.elementName = `${className}.items`;
+    }
+
+    public write(xmlWriter: any) {
+        xmlWriter.startElement("xs:choice");
+            xmlWriter.startElement("xs:element");
+                xmlWriter.writeAttribute("name", this.elementName);
+                xmlWriter.writeAttribute("maxOccurs", "1");
+
+                xmlWriter.startElement("xs:complexType");
+                    xmlWriter.startElement("xs:sequence");
+
+                        xmlWriter.startElement("xs:element");
+                            xmlWriter.writeAttribute("name", this.className + "Item");
+                            xmlWriter.writeAttribute("maxOccurs", "unbounded");
+
+                            xmlWriter.startElement("xs:complexType");
+                                xmlWriter.startElement("xs:attribute");
+                                    xmlWriter.writeAttribute("name", "title");
+                                    xmlWriter.writeAttribute("type", "StringValidator");
+                                xmlWriter.endElement();
+                            xmlWriter.endElement();
+                        xmlWriter.endElement();
+
+                    xmlWriter.endElement();
+                xmlWriter.endElement();
+
+            xmlWriter.endElement();
+        xmlWriter.endElement();
+    }
+}
+
 export class ItemTemplateWriter {
     public elementName: string;
 
@@ -116,6 +152,7 @@ export class ItemTemplateWriter {
 
 export class ClassWriter {
     public itemTemplateWriter: ItemTemplateWriter = null;
+    public hardCodedItemsWriter: HardCodedItemsWriter = null;
 
     public constructor(public classDefinition: Class, public validatorFactory: ValidatorFactory) {
         //let properties: Property[] = [];
@@ -125,6 +162,10 @@ export class ClassWriter {
                 this.itemTemplateWriter = new ItemTemplateWriter(this.classDefinition.name);
             }
         });
+
+        if (classDefinition.name == 'TabView' || classDefinition.name == 'SegmentedBar') {
+            this.hardCodedItemsWriter = new HardCodedItemsWriter(this.classDefinition.name);
+        }
     }
 
     public write(xmlWriter: any) {
@@ -161,6 +202,9 @@ export class ClassWriter {
             }
             if (this.itemTemplateWriter) {
                 this.itemTemplateWriter.write(writer);
+            }
+            if (this.hardCodedItemsWriter) {
+                this.hardCodedItemsWriter.write(writer);
             }
             this._addClassAttributeGroup(writer);
 
