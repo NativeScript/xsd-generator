@@ -90,7 +90,8 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), null, null));
+            let writer = new ValidatorWriter(new Validator(new Type("string"), null, null));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -102,7 +103,8 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), <string[]>[], null));
+            let writer = new ValidatorWriter(new Validator(new Type("string"), <string[]>[], null));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -114,8 +116,8 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new ValidatorWriter();
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], null));
+            var writer = new ValidatorWriter(new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], null));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -127,8 +129,8 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new ValidatorWriter();
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], new Restriction("xs:string", null, null, null)));
+            var writer = new ValidatorWriter(new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], new Restriction("xs:string", null, null, null)));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -140,8 +142,8 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new ValidatorWriter();
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), null, new Restriction("xs:string", null, null, null)));
+            var writer = new ValidatorWriter(new Validator(new Type("string"), null, new Restriction("xs:string", null, null, null)));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();

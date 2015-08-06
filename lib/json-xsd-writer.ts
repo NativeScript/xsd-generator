@@ -55,7 +55,8 @@ export class JsonXsdWriter {
 
     private writeValidators(writer: any, validators: Validator[]) {
         validators.forEach((validator) => {
-            ValidatorWriter.write(writer, validator);
+            let validatorWriter = new ValidatorWriter(validator);
+            validatorWriter.write(writer);
         });
     }
 
@@ -153,21 +154,29 @@ export class JsonXsdWriter {
 }
 
 export class ValidatorWriter {
-    public static write(xmlWriter: any, validator: Validator) {
+    private restrictionWriter: RestrictionWriter;
+
+    public constructor(public validator: Validator){
+        if (this.validator.restriction) {
+            this.restrictionWriter = new RestrictionWriter(this.validator.restriction);
+        }
+    }
+
+    public write(xmlWriter: any) {
         xmlWriter.startElement("xs:simpleType");
-        xmlWriter.writeAttribute("name", validator.name);
-        if (validator.unionMemberTypes && validator.unionMemberTypes.length > 0) {
+        xmlWriter.writeAttribute("name", this.validator.name);
+        if (this.validator.unionMemberTypes && this.validator.unionMemberTypes.length > 0) {
             xmlWriter.startElement("xs:union");
-            xmlWriter.writeAttribute("memberTypes", validator.unionMemberTypes.join(" "));
+            xmlWriter.writeAttribute("memberTypes", this.validator.unionMemberTypes.join(" "));
             xmlWriter.startElement("xs:simpleType");
-            if (validator.restriction) {
-                RestrictionWriter.write(xmlWriter, validator.restriction);
+            if (this.restrictionWriter) {
+                this.restrictionWriter.write(xmlWriter);
             }
             xmlWriter.endElement();
             xmlWriter.endElement();
         } else {
-            if (validator.restriction) {
-                RestrictionWriter.write(xmlWriter, validator.restriction);
+            if (this.restrictionWriter) {
+                this.restrictionWriter.write(xmlWriter);
             }
         }
         xmlWriter.endElement();
@@ -175,26 +184,29 @@ export class ValidatorWriter {
 }
 
 export class RestrictionWriter {
-    public static write(xmlWriter: any, restriction: Restriction) {
-        if (!restriction) {
+    public constructor(public restriction: Restriction) {
+    }
+
+    public write(xmlWriter: any) {
+        if (!this.restriction) {
             throw new Error("Restriction to be written is null or undefined!");
         }
         xmlWriter.startElement("xs:restriction");
-        if (restriction.base) {
-            xmlWriter.writeAttribute("base", restriction.base);
+        if (this.restriction.base) {
+            xmlWriter.writeAttribute("base", this.restriction.base);
         }
-        if (restriction.pattern) {
+        if (this.restriction.pattern) {
             xmlWriter.startElement("xs:pattern");
-            xmlWriter.writeAttribute("value", restriction.pattern);
+            xmlWriter.writeAttribute("value", this.restriction.pattern);
             xmlWriter.endElement();
         }
-        if (restriction.whiteSpace) {
+        if (this.restriction.whiteSpace) {
             xmlWriter.startElement("xs:whiteSpace");
-            xmlWriter.writeAttribute("value", restriction.whiteSpace);
+            xmlWriter.writeAttribute("value", this.restriction.whiteSpace);
             xmlWriter.endElement();
         }
-        if (restriction.enumValues) {
-            restriction.enumValues.forEach((enumValue) => {
+        if (this.restriction.enumValues) {
+            this.restriction.enumValues.forEach((enumValue) => {
                 xmlWriter.startElement("xs:enumeration");
                 xmlWriter.writeAttribute("value", enumValue);
                 xmlWriter.endElement();
