@@ -52,14 +52,24 @@ export class JsonXsdWriter {
         writer.startElement("xs:choice");
 
         _classes.forEach((_class) => {
-            writer.startElement("xs:element");
-            writer.writeAttribute("name", _class.name);
-            writer.writeAttribute("type", _class.name);
-            writer.endElement();
+            let uiWriter = new UIComponentWriter(_class);
+            uiWriter.write(writer);
         });
 
         writer.endElement();
         writer.endElement();
+    }
+}
+
+export class UIComponentWriter {
+    public constructor(public classDefinition: Class) {
+    }
+
+    public write(xmlWriter: any) {
+        xmlWriter.startElement("xs:element");
+        xmlWriter.writeAttribute("name", this.classDefinition.name);
+        xmlWriter.writeAttribute("type", this.classDefinition.name);
+        xmlWriter.endElement();
     }
 }
 
