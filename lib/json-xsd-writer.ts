@@ -34,23 +34,9 @@ export class JsonXsdWriter {
 
     private processClasses(writer: any, classes: Class[]) {
         classes.forEach((_class) => {
-            this._addClassType(writer, _class);
-            this._addClassElement(writer, _class);
+            let classWriter = new ClassWriter(_class, this.validatorFactory);
+            classWriter.write(writer);
         });
-    }
-
-    private _addClassProperties(writer: any, _class: Class) {
-        writer.startElement("xs:attributeGroup");
-        writer.writeAttribute("name", this._getClassAttributesRefName(_class));
-        _class.properties.forEach((property) => {
-            if (!this._checkOverridenProperty(property, _class)) {
-                writer.startElement("xs:attribute");
-                writer.writeAttribute("name", property.name);
-                writer.writeAttribute("type", this.validatorFactory.getValidator(property.type).name);
-                writer.endElement();
-            }
-        });
-        writer.endElement();
     }
 
     private writeValidators(writer: any, validators: Validator[]) {
@@ -75,45 +61,41 @@ export class JsonXsdWriter {
         writer.endElement();
         writer.endElement();
     }
+}
 
-    // TODO: There are properties, that are declared in both the parent and child type.
-    //  These are handled via a restriction tag (http://stackoverflow.com/questions/13952721/how-to-override-xsd-element-inside-of-parent-extended-element),
-    //  however, they are the same in our situation. Simply remove them for the time being:
-    private _checkOverridenProperty(prop: Property, _class: Class): boolean {
-        if ((prop.name === "borderColor" || prop.name === "borderWidth") && _class.fullName === '"ui/border".Border') {
-            return true;
-        }
-        if ((prop.name === "paddingBottom" || prop.name === "paddingTop"
-                    || prop.name === "paddingLeft" || prop.name === "paddingRight") && _class.fullName === '"ui/layouts/layout".Layout') {
-            return true;
-        }
-        return false;
+export class ClassWriter {
+    public constructor(public classDefinition: Class, public validatorFactory: ValidatorFactory) {
     }
 
-    private _addClassType(writer: any, _class: Class) {
-        this._addClassProperties(writer, _class);
+    public write(xmlWriter: any) {
+        this._addClassType(xmlWriter);
+        this._addClassElement(xmlWriter);
+    }
+
+    private _addClassType(writer: any) {
+        this._addClassProperties(writer);
 
         writer.startElement("xs:complexType");
-        writer.writeAttribute("name", _class.name);
+        writer.writeAttribute("name", this.classDefinition.name);
 
         //TODO: Extract the logic of knowing about the "View" class somewhere outside?
-        if (_class.fullName !== '"ui/core/view".View') {
+        if (this.classDefinition.fullName !== '"ui/core/view".View') {
             writer.startElement("xs:complexContent");
             writer.startElement("xs:extension");
 
-            writer.writeAttribute("base", _class.baseClassNames[0].name);
+            writer.writeAttribute("base", this.classDefinition.baseClassNames[0].name);
 
             //TODO: The ContentView and Layout classes are special classes that can have content (and such are their inheritors like Page, ScrollView, StackLayout, etc).
             // This might be done in a better manner - create a special class with specific rendering for example?
-            if (_class.fullName === '"ui/content-view".ContentView' ||
-                _class.fullName === '"ui/layouts/layout".Layout' ||
-                _class.fullName === '"ui/core/view".CustomLayoutView'
+            if (this.classDefinition.fullName === '"ui/content-view".ContentView' ||
+                this.classDefinition.fullName === '"ui/layouts/layout".Layout' ||
+                this.classDefinition.fullName === '"ui/core/view".CustomLayoutView'
                 ) {
                 writer.startElement("xs:sequence");
                 writer.startElement("xs:group");
 
                 writer.writeAttribute("ref", "UIComponents");
-                if (_class.fullName === '"ui/content-view".ContentView') {
+                if (this.classDefinition.fullName === '"ui/content-view".ContentView') {
                     writer.writeAttribute("maxOccurs", "1");
                 } else {
                     writer.writeAttribute("maxOccurs", "unbounded");
@@ -122,34 +104,63 @@ export class JsonXsdWriter {
                 writer.endElement();
                 writer.endElement();
             }
-            this._addClassAttributeGroup(writer, _class);
+            this._addClassAttributeGroup(writer);
 
             writer.endElement();
             writer.endElement();
         } else {
-            this._addClassAttributeGroup(writer, _class);
+            this._addClassAttributeGroup(writer);
         }
 
 
         writer.endElement();
     }
 
-    private _addClassAttributeGroup(writer: any, _class: Class) {
+    private _addClassProperties(writer: any) {
         writer.startElement("xs:attributeGroup");
-        writer.writeAttribute("ref", this._getClassAttributesRefName(_class));
+        writer.writeAttribute("name", this._getClassAttributesRefName());
+        this.classDefinition.properties.forEach((property) => {
+            if (!this._checkOverridenProperty(property)) {
+                writer.startElement("xs:attribute");
+                writer.writeAttribute("name", property.name);
+                writer.writeAttribute("type", this.validatorFactory.getValidator(property.type).name);
+                writer.endElement();
+            }
+        });
         writer.endElement();
     }
 
-    private _addClassElement(writer:any, _class: Class) {
+
+    private _addClassElement(writer:any) {
         writer.startElement("xs:element");
-        writer.writeAttribute("name", _class.name);
-        writer.writeAttribute("type", _class.name);
+        writer.writeAttribute("name", this.classDefinition.name);
+        writer.writeAttribute("type", this.classDefinition.name);
         writer.endElement();
     }
 
-    private _getClassAttributesRefName(_class: Class): string {
-        var className = _class.name;
+    private _addClassAttributeGroup(writer: any) {
+        writer.startElement("xs:attributeGroup");
+        writer.writeAttribute("ref", this._getClassAttributesRefName());
+        writer.endElement();
+    }
+
+    private _getClassAttributesRefName(): string {
+        var className = this.classDefinition.name;
         return Utils.ensureStartingLCase(className) + "Attributes";
+    }
+
+    // TODO: There are properties, that are declared in both the parent and child type.
+    //  These are handled via a restriction tag (http://stackoverflow.com/questions/13952721/how-to-override-xsd-element-inside-of-parent-extended-element),
+    //  however, they are the same in our situation. Simply remove them for the time being:
+    private _checkOverridenProperty(prop: Property): boolean {
+        if ((prop.name === "borderColor" || prop.name === "borderWidth") && this.classDefinition.fullName === '"ui/border".Border') {
+            return true;
+        }
+        if ((prop.name === "paddingBottom" || prop.name === "paddingTop"
+                    || prop.name === "paddingLeft" || prop.name === "paddingRight") && this.classDefinition.fullName === '"ui/layouts/layout".Layout') {
+            return true;
+        }
+        return false;
     }
 }
 
