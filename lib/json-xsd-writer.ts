@@ -32,27 +32,35 @@ export class JsonXsdWriter {
         return this._validatorFactory;
     }
 
+    public getClassWriters(classes: Class[]): ClassWriter[] {
+        return classes.map((_class) => new ClassWriter(_class, this.validatorFactory));
+    }
+
     private processClasses(writer: any, classes: Class[]) {
-        classes.forEach((_class) => {
-            let classWriter = new ClassWriter(_class, this.validatorFactory);
+        this.getClassWriters(classes).forEach((classWriter) => {
             classWriter.write(writer);
         });
     }
 
+    public getValidatorWriters(validators: Validator[]) {
+        return validators.map((validator) =>  new ValidatorWriter(validator));
+    }
+
     private writeValidators(writer: any, validators: Validator[]) {
-        validators.forEach((validator) => {
-            let validatorWriter = new ValidatorWriter(validator);
+        this.getValidatorWriters(validators).forEach((validatorWriter) => {
             validatorWriter.write(writer);
         });
     }
 
+    public getUIComponentWriters(classes: Class[]) {
+        return classes.map((_class) => new UIComponentWriter(_class));
+    }
     private writeUIComponents(writer: any, _classes: Class[]) {
         writer.startElement("xs:group");
         writer.writeAttribute("name", "UIComponents");
         writer.startElement("xs:choice");
 
-        _classes.forEach((_class) => {
-            let uiWriter = new UIComponentWriter(_class);
+        this.getUIComponentWriters(_classes).forEach((uiWriter) => {
             uiWriter.write(writer);
         });
 
