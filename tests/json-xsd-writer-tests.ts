@@ -1,5 +1,5 @@
 import * as should from "should";
-import {JsonXsdWriter, ValidatorWriter} from "../lib/json-xsd-writer";
+import {JsonXsdWriter, ValidatorWriter, ClassWriter, ItemTemplateWriter} from "../lib/json-xsd-writer";
 import {Tree, Class, Property, Type} from "../lib/lang-elements";
 import * as XmlWriter from "xml-writer";
 import {Validator, Restriction} from "../lib/xsd-elements";
@@ -174,5 +174,21 @@ describe("ValidatorWriter", () => {
 
             xmlWriter.toString().should.match(/.*<xs:simpleType name="StringValidator">[\n\s]*<xs:restriction base="xs:string"\/>[\n\s]*<\/xs:simpleType>.*/m);
         });
+    });
+});
+
+describe("ClassWriter", () => {
+    it("should create ItemTemplateWriter, if needed", () => {
+        var templatedClass = new Class("ListView", '"ui/list-view".ListView', "Class1Comments", [new Type("View")]);
+
+        templatedClass.properties.push(new Property("itemTemplate", new Type("string")));
+        let classWriter = new ClassWriter(templatedClass, null)
+        let templateWriter = classWriter.itemTemplateWriter;
+        templateWriter.should.not.eql(null);
+        templateWriter.elementName.should.eql("ListView.itemTemplate");
+
+        var nonTemplatedClass = new Class("Button", '"ui/button".Button', "Class1Comments", [new Type("View")]);
+        let classWriterNoTemplate = new ClassWriter(nonTemplatedClass, null);
+        (classWriterNoTemplate.itemTemplateWriter == null).should.be.true;
     });
 });

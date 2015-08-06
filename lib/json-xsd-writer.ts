@@ -93,8 +93,38 @@ export class UIComponentWriter {
     }
 }
 
+export class ItemTemplateWriter {
+    public elementName: string;
+
+    public constructor(public className: string) {
+        this.elementName = `${className}.itemTemplate`;
+    }
+
+    public write(xmlWriter: any) {
+        xmlWriter.startElement("xs:choice");
+        xmlWriter.startElement("xs:element");
+        xmlWriter.writeAttribute("name", this.elementName);
+
+        xmlWriter.startElement("xs:complexType");
+        ClassWriter.writeUIComponentsChildGroup(xmlWriter);
+        xmlWriter.endElement();
+
+        xmlWriter.endElement();
+        xmlWriter.endElement();
+    }
+}
+
 export class ClassWriter {
+    public itemTemplateWriter: ItemTemplateWriter = null;
+
     public constructor(public classDefinition: Class, public validatorFactory: ValidatorFactory) {
+        //let properties: Property[] = [];
+        let properties: Property[] = this.classDefinition.properties || [];
+        properties.forEach((property) => {
+            if (property.name == 'itemTemplate') {
+                this.itemTemplateWriter = new ItemTemplateWriter(this.classDefinition.name);
+            }
+        });
     }
 
     public write(xmlWriter: any) {
@@ -122,17 +152,15 @@ export class ClassWriter {
                 this.classDefinition.fullName === '"ui/core/view".CustomLayoutView'
                 ) {
                 writer.startElement("xs:sequence");
-                writer.startElement("xs:group");
-
-                writer.writeAttribute("ref", "UIComponents");
                 if (this.classDefinition.fullName === '"ui/content-view".ContentView') {
-                    writer.writeAttribute("maxOccurs", "1");
+                    ClassWriter.writeUIComponentsChildGroup(writer, "1");
                 } else {
-                    writer.writeAttribute("maxOccurs", "unbounded");
+                    ClassWriter.writeUIComponentsChildGroup(writer, "unbounded");
                 }
-
                 writer.endElement();
-                writer.endElement();
+            }
+            if (this.itemTemplateWriter) {
+                this.itemTemplateWriter.write(writer);
             }
             this._addClassAttributeGroup(writer);
 
@@ -143,6 +171,13 @@ export class ClassWriter {
         }
 
 
+        writer.endElement();
+    }
+
+    public static writeUIComponentsChildGroup(writer: any, maxOccurs: string = "1") {
+        writer.startElement("xs:group");
+        writer.writeAttribute("ref", "UIComponents");
+        writer.writeAttribute("maxOccurs", maxOccurs);
         writer.endElement();
     }
 
