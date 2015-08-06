@@ -1,5 +1,11 @@
 import * as should from "should";
-import {JsonXsdWriter, ValidatorWriter} from "../lib/json-xsd-writer";
+import {
+    JsonXsdWriter,
+    ValidatorWriter,
+    ClassWriter,
+    ItemTemplateWriter,
+    HardCodedItemsWriter
+} from "../lib/json-xsd-writer";
 import {Tree, Class, Property, Type} from "../lib/lang-elements";
 import * as XmlWriter from "xml-writer";
 import {Validator, Restriction} from "../lib/xsd-elements";
@@ -33,6 +39,30 @@ describe("JsonXsdWriter", () => {
                 done();
             });
         });
+        it("Should exclude base types from UIComponents list", (done) => {
+            var goodClass = new Class("Class1Name", "Class1FullName", "Class1Comments", [new Type("Class1BaseClass1")]);
+            var tree = new Tree();
+            tree.addClass(goodClass);
+
+            let baseClasses = [
+                "View",
+                "CustomLayoutView",
+                "EditableTextBase",
+                "LayoutBase",
+                "Layout",
+                "TextBase",
+            ]
+            baseClasses.forEach((className) => {
+                var badClass = new Class(className, "FullName" + className, "Class1Comments", [new Type("Class1BaseClass1")]);
+                tree.addClass(badClass);
+            })
+
+            var writer = new JsonXsdWriter();
+            let uiWriters = writer.getUIComponentWriters(tree.Classes);
+
+            uiWriters.length.should.eql(1);
+            done()
+        })
         it("should create an attribute group with the properties of the class", () => {
             var writer = new JsonXsdWriter();
 
@@ -90,7 +120,8 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), null, null));
+            let writer = new ValidatorWriter(new Validator(new Type("string"), null, null));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -102,7 +133,8 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), <string[]>[], null));
+            let writer = new ValidatorWriter(new Validator(new Type("string"), <string[]>[], null));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -114,8 +146,8 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new ValidatorWriter();
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], null));
+            var writer = new ValidatorWriter(new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], null));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -127,8 +159,8 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new ValidatorWriter();
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], new Restriction("xs:string", null, null, null)));
+            var writer = new ValidatorWriter(new Validator(new Type("string"), ["SomeValidator", "OtherValidator"], new Restriction("xs:string", null, null, null)));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
@@ -140,13 +172,43 @@ describe("ValidatorWriter", () => {
             xmlWriter.startDocument();
             xmlWriter.startElement("root");
 
-            var writer = new ValidatorWriter();
-            ValidatorWriter.write(xmlWriter, new Validator(new Type("string"), null, new Restriction("xs:string", null, null, null)));
+            var writer = new ValidatorWriter(new Validator(new Type("string"), null, new Restriction("xs:string", null, null, null)));
+            writer.write(xmlWriter);
 
             xmlWriter.endElement();
             xmlWriter.endDocument();
 
             xmlWriter.toString().should.match(/.*<xs:simpleType name="StringValidator">[\n\s]*<xs:restriction base="xs:string"\/>[\n\s]*<\/xs:simpleType>.*/m);
+        });
+    });
+});
+
+describe("ClassWriter", () => {
+    it("should create ItemTemplateWriter, if needed", () => {
+        var templatedClass = new Class("ListView", '"ui/list-view".ListView', "Class1Comments", [new Type("View")]);
+
+        templatedClass.properties.push(new Property("itemTemplate", new Type("string")));
+        let classWriter = new ClassWriter(templatedClass, null)
+        let templateWriter = classWriter.itemTemplateWriter;
+        templateWriter.should.not.eql(null);
+        templateWriter.elementName.should.eql("ListView.itemTemplate");
+
+        var nonTemplatedClass = new Class("Button", '"ui/button".Button', "Class1Comments", [new Type("View")]);
+        let classWriterNoTemplate = new ClassWriter(nonTemplatedClass, null);
+        (classWriterNoTemplate.itemTemplateWriter == null).should.be.true;
+    });
+
+    it("should create HardCodedItemsWriter, if needed", () => {
+        var templatedClasses = [
+            new Class("TabView", '"ui/tab-view".TabView', "Class1Comments", [new Type("View")]),
+            new Class("SegmentedBar", '"ui/segmented-bar".SegmentedBar', "Class1Comments", [new Type("View")]),
+        ];
+
+        templatedClasses.forEach((_class) => {
+            let classWriter = new ClassWriter(_class, null)
+            let itemsWriter = classWriter.hardCodedItemsWriter;
+            itemsWriter.should.not.eql(null);
+            itemsWriter.elementName.should.eql(_class.name + ".items");
         });
     });
 });

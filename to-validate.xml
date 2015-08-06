@@ -4,5 +4,18 @@
       <WebView src="{{ webViewUrl }}" minHeight="20" minWidth="20" loadFinished="{{ loadFinished }}"/>
       <Label text="This is a label after the webview" />
       <Switch checked="true" />
+        <!--items="{{ redditItems }}"-->
+      <ListView
+        isScrolling="{{ isScrolling }}" itemTap="listViewItemTap" loadMoreItems="listViewLoadMoreItems">
+        <ListView.itemTemplate>
+          <Label text="This is a label after the webview" />
+        </ListView.itemTemplate>
+      </ListView>
+      <TabView>
+        <TabView.items>
+          <TabViewItem title="fafla" />
+          <TabViewItem title="fafla2" />
+        </TabView.items>
+      </TabView>
   </StackLayout>
 </Page>
