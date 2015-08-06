@@ -5,9 +5,19 @@ import {Utils} from "./globals";
 
 export class JsonXsdWriter {
     private _validatorFactory: ValidatorFactory;
+    private excludedUIComponents: Map<string, boolean>;
 
     constructor() {
         this._validatorFactory= new ValidatorFactory();
+        this.excludedUIComponents = new Map<string, boolean>([]);
+        [
+            "View",
+            "CustomLayoutView",
+            "EditableTextBase",
+            "LayoutBase",
+            "Layout",
+            "TextBase",
+        ].forEach((excluded) => this.excludedUIComponents.set(excluded, true))
     }
 
     public parse(rootName: string, tree: Tree, rootAttributes?: Map<string, string>): string {
@@ -53,7 +63,9 @@ export class JsonXsdWriter {
     }
 
     public getUIComponentWriters(classes: Class[]) {
-        return classes.map((_class) => new UIComponentWriter(_class));
+        return classes.filter((_class) =>
+            !this.excludedUIComponents.has(_class.name)).map((_class) =>
+                new UIComponentWriter(_class));
     }
     private writeUIComponents(writer: any, _classes: Class[]) {
         writer.startElement("xs:group");

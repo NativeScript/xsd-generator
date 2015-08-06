@@ -33,6 +33,30 @@ describe("JsonXsdWriter", () => {
                 done();
             });
         });
+        it("Should exclude base types from UIComponents list", (done) => {
+            var goodClass = new Class("Class1Name", "Class1FullName", "Class1Comments", [new Type("Class1BaseClass1")]);
+            var tree = new Tree();
+            tree.addClass(goodClass);
+
+            let baseClasses = [
+                "View",
+                "CustomLayoutView",
+                "EditableTextBase",
+                "LayoutBase",
+                "Layout",
+                "TextBase",
+            ]
+            baseClasses.forEach((className) => {
+                var badClass = new Class(className, "FullName" + className, "Class1Comments", [new Type("Class1BaseClass1")]);
+                tree.addClass(badClass);
+            })
+
+            var writer = new JsonXsdWriter();
+            let uiWriters = writer.getUIComponentWriters(tree.Classes);
+
+            uiWriters.length.should.eql(1);
+            done()
+        })
         it("should create an attribute group with the properties of the class", () => {
             var writer = new JsonXsdWriter();
 
