@@ -57,15 +57,13 @@ export class FileWalker {
     }
 
     public buildTree(filters?: IClassFilter[]): lang.Tree {
+        filters = filters || [{shouldEmit: (_class) => true}];
         var allClasses = this._getAllClasses();
 
-        var filteredClasses = allClasses;
-
-        if (filters) {
-            filters.forEach((filter) => {
-                filteredClasses = filter.filter(filteredClasses);
-            });
-        }
+        var filteredClasses = allClasses.filter((_class) => {
+            let filterResults = filters.map((filter) => filter.shouldEmit(_class));
+            return filterResults.some((result) => result === true);
+        });
 
         var tree = new lang.Tree();
         filteredClasses.forEach((_class) => {

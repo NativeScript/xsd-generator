@@ -17,6 +17,9 @@ export class JsonXsdWriter {
             "LayoutBase",
             "Layout",
             "TextBase",
+            "ActionItem",
+            "ActionItemBase",
+            "Bindable",
         ].forEach((excluded) => this.excludedUIComponents.set(excluded, true))
     }
 
@@ -180,7 +183,8 @@ export class ClassWriter {
         writer.writeAttribute("name", this.classDefinition.name);
 
         //TODO: Extract the logic of knowing about the "View" class somewhere outside?
-        if (this.classDefinition.fullName !== '"ui/core/view".View') {
+        if (this.classDefinition.fullName !== '"ui/core/view".View' &&
+            this.classDefinition.fullName !== '"ui/core/bindable".Bindable') {
             writer.startElement("xs:complexContent");
             writer.startElement("xs:extension");
 
