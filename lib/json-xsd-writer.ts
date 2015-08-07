@@ -153,12 +153,71 @@ export class ItemTemplateWriter {
     }
 }
 
+export class PageActionBarWriter {
+    public elementName: string;
+
+    public constructor(public className: string) {
+        this.elementName = `${className}.actionBar`;
+    }
+
+    public write(xmlWriter: any) {
+        xmlWriter.startElement("xs:sequence");
+            xmlWriter.startElement("xs:element");
+                xmlWriter.writeAttribute("name", this.elementName);
+
+                xmlWriter.startElement("xs:complexType");
+                    xmlWriter.startElement("xs:sequence");
+                        xmlWriter.startElement("xs:element");
+                            xmlWriter.writeAttribute("name", "ActionBar");
+                            xmlWriter.writeAttribute("type", "ActionBar");
+                            xmlWriter.writeAttribute("maxOccurs", "1");
+                        xmlWriter.endElement();
+                    xmlWriter.endElement();
+                xmlWriter.endElement();
+
+            xmlWriter.endElement();
+            ClassWriter.writeUIComponentsChildGroup(xmlWriter, "1");
+        xmlWriter.endElement();
+    }
+}
+
+export class ActionItemsWriter {
+    public elementName: string;
+
+    public constructor(public className: string) {
+        this.elementName = `${className}.actionItems`;
+    }
+
+    public write(xmlWriter: any) {
+        xmlWriter.startElement("xs:choice");
+            xmlWriter.startElement("xs:element");
+                xmlWriter.writeAttribute("name", this.elementName);
+                xmlWriter.writeAttribute("maxOccurs", "1");
+
+                xmlWriter.startElement("xs:complexType");
+                    xmlWriter.startElement("xs:sequence");
+
+                        xmlWriter.startElement("xs:element");
+                            xmlWriter.writeAttribute("name", "ActionItem");
+                            xmlWriter.writeAttribute("type", "ActionItem");
+                            xmlWriter.writeAttribute("maxOccurs", "unbounded");
+                        xmlWriter.endElement();
+
+                    xmlWriter.endElement();
+                xmlWriter.endElement();
+
+            xmlWriter.endElement();
+        xmlWriter.endElement();
+    }
+}
+
 export class ClassWriter {
     public itemTemplateWriter: ItemTemplateWriter = null;
     public hardCodedItemsWriter: HardCodedItemsWriter = null;
+    public pageActionBarWriter: PageActionBarWriter = null;
+    public actionItemsWriter: ActionItemsWriter = null;
 
     public constructor(public classDefinition: Class, public validatorFactory: ValidatorFactory) {
-        //let properties: Property[] = [];
         let properties: Property[] = this.classDefinition.properties || [];
         properties.forEach((property) => {
             if (property.name == 'itemTemplate') {
@@ -169,11 +228,29 @@ export class ClassWriter {
         if (classDefinition.name == 'TabView' || classDefinition.name == 'SegmentedBar') {
             this.hardCodedItemsWriter = new HardCodedItemsWriter(this.classDefinition.name);
         }
+
+        if (classDefinition.name == 'Page') {
+            this.pageActionBarWriter = new PageActionBarWriter(this.classDefinition.name);
+        }
+
+        if (classDefinition.name == 'ActionBar') {
+            this.actionItemsWriter = new ActionItemsWriter(this.classDefinition.name);
+        }
     }
 
     public write(xmlWriter: any) {
         this._addClassType(xmlWriter);
         this._addClassElement(xmlWriter);
+    }
+
+    private getBaseClass(): string {
+        if (this.classDefinition.name === "Page") {
+            // Skip the ContentView intermediate class to make the XSD schema work
+            // Duplicate its UIComponents group ref element
+            // emitted by PageActionBarWriter
+            return "View";
+        }
+        return this.classDefinition.baseClassNames[0].name;
     }
 
     private _addClassType(writer: any) {
@@ -188,7 +265,7 @@ export class ClassWriter {
             writer.startElement("xs:complexContent");
             writer.startElement("xs:extension");
 
-            writer.writeAttribute("base", this.classDefinition.baseClassNames[0].name);
+            writer.writeAttribute("base", this.getBaseClass());
 
             //TODO: The ContentView and Layout classes are special classes that can have content (and such are their inheritors like Page, ScrollView, StackLayout, etc).
             // This might be done in a better manner - create a special class with specific rendering for example?
@@ -209,6 +286,12 @@ export class ClassWriter {
             }
             if (this.hardCodedItemsWriter) {
                 this.hardCodedItemsWriter.write(writer);
+            }
+            if (this.pageActionBarWriter) {
+                this.pageActionBarWriter.write(writer);
+            }
+            if (this.actionItemsWriter) {
+                this.actionItemsWriter.write(writer);
             }
             this._addClassAttributeGroup(writer);
 

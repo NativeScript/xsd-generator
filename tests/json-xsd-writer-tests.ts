@@ -211,4 +211,16 @@ describe("ClassWriter", () => {
             itemsWriter.elementName.should.eql(_class.name + ".items");
         });
     });
+    it("should create PageActionBarWriter, if needed", () => {
+        var pageClass = new Class("Page", '"ui/page".Page', "Class1Comments", [new Type("View")]);
+
+        let classWriter = new ClassWriter(pageClass, null)
+        let itemsWriter = classWriter.pageActionBarWriter;
+        itemsWriter.should.not.eql(null);
+        itemsWriter.elementName.should.eql("Page.actionBar");
+
+        var nonPageClass = new Class("Button", '"ui/button".Button', "Class1Comments", [new Type("View")]);
+        let classWriterNoTemplate = new ClassWriter(nonPageClass, null);
+        (classWriterNoTemplate.pageActionBarWriter == null).should.be.true;
+    });
 });
