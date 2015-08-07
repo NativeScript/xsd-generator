@@ -41,7 +41,7 @@ describe("ViewExtendersFilter", () => {
             existingClass.should.not.eql(null);
 
             var filter = new ViewExtendersFilter();
-            var filteredClasses = filter.filter(builtTree.Classes);
+            var filteredClasses = builtTree.Classes.filter((_class) => filter.shouldEmit(_class));
             var commentedWithPrivateClass: Class = null;
             for (var i=0; i<filteredClasses.length; i++) {
                 var filteredClass = filteredClasses[i];
@@ -66,7 +66,7 @@ describe("ViewExtendersFilter", () => {
             existingClass.should.not.eql(null);
 
             var filter = new ViewExtendersFilter();
-            var filteredClasses = filter.filter(builtTree.Classes);
+            var filteredClasses = builtTree.Classes.filter((_class) => filter.shouldEmit(_class));
             var contentViewClass: Class = null;
             for (var i=0; i<filteredClasses.length; i++) {
                 var filteredClass = filteredClasses[i];
@@ -91,7 +91,7 @@ describe("ViewExtendersFilter", () => {
             existingClass.should.not.eql(null);
 
             var filter = new ViewExtendersFilter();
-            var filteredClasses = filter.filter(builtTree.Classes);
+            var filteredClasses = builtTree.Classes.filter((_class) => filter.shouldEmit(_class));
             var commentedWithPrivateClass: Class = null;
             for (var i=0; i<filteredClasses.length; i++) {
                 var filteredClass = filteredClasses[i];
@@ -105,7 +105,7 @@ describe("ViewExtendersFilter", () => {
 
         it("should return the view class", () => {
             var filter = new ViewExtendersFilter();
-            var filteredClasses = filter.filter(builtTree.Classes);
+            var filteredClasses = builtTree.Classes.filter((_class) => filter.shouldEmit(_class));
             var viewClass: Class = null;
             for (var i=0; i<filteredClasses.length; i++) {
                 var filteredClass = filteredClasses[i];

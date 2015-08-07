@@ -17,6 +17,9 @@ export class JsonXsdWriter {
             "LayoutBase",
             "Layout",
             "TextBase",
+            "ActionItem",
+            "ActionItemBase",
+            "Bindable",
         ].forEach((excluded) => this.excludedUIComponents.set(excluded, true))
     }
 
@@ -93,7 +96,12 @@ export class UIComponentWriter {
     }
 }
 
-export class HardCodedItemsWriter {
+interface SpecialCaseElementWriter {
+    elementName: string;
+    write(xmlWriter: any): any;
+}
+
+export class HardCodedItemsWriter implements SpecialCaseElementWriter {
     public elementName: string;
 
     public constructor(public className: string) {
@@ -129,7 +137,7 @@ export class HardCodedItemsWriter {
     }
 }
 
-export class ItemTemplateWriter {
+export class ItemTemplateWriter implements SpecialCaseElementWriter {
     public elementName: string;
 
     public constructor(public className: string) {
@@ -150,27 +158,99 @@ export class ItemTemplateWriter {
     }
 }
 
+export class PageActionBarWriter implements SpecialCaseElementWriter {
+    public elementName: string;
+
+    public constructor(public className: string) {
+        this.elementName = `${className}.actionBar`;
+    }
+
+    public write(xmlWriter: any) {
+        xmlWriter.startElement("xs:sequence");
+            xmlWriter.startElement("xs:element");
+                xmlWriter.writeAttribute("name", this.elementName);
+
+                xmlWriter.startElement("xs:complexType");
+                    xmlWriter.startElement("xs:sequence");
+                        xmlWriter.startElement("xs:element");
+                            xmlWriter.writeAttribute("name", "ActionBar");
+                            xmlWriter.writeAttribute("type", "ActionBar");
+                            xmlWriter.writeAttribute("maxOccurs", "1");
+                        xmlWriter.endElement();
+                    xmlWriter.endElement();
+                xmlWriter.endElement();
+
+            xmlWriter.endElement();
+            ClassWriter.writeUIComponentsChildGroup(xmlWriter, "1");
+        xmlWriter.endElement();
+    }
+}
+
+export class ActionItemsWriter implements SpecialCaseElementWriter {
+    public elementName: string;
+
+    public constructor(public className: string) {
+        this.elementName = `${className}.actionItems`;
+    }
+
+    public write(xmlWriter: any) {
+        xmlWriter.startElement("xs:choice");
+            xmlWriter.startElement("xs:element");
+                xmlWriter.writeAttribute("name", this.elementName);
+                xmlWriter.writeAttribute("maxOccurs", "1");
+
+                xmlWriter.startElement("xs:complexType");
+                    xmlWriter.startElement("xs:sequence");
+
+                        xmlWriter.startElement("xs:element");
+                            xmlWriter.writeAttribute("name", "ActionItem");
+                            xmlWriter.writeAttribute("type", "ActionItem");
+                            xmlWriter.writeAttribute("maxOccurs", "unbounded");
+                        xmlWriter.endElement();
+
+                    xmlWriter.endElement();
+                xmlWriter.endElement();
+
+            xmlWriter.endElement();
+        xmlWriter.endElement();
+    }
+}
+
 export class ClassWriter {
-    public itemTemplateWriter: ItemTemplateWriter = null;
-    public hardCodedItemsWriter: HardCodedItemsWriter = null;
+    public specialCaseWriter: SpecialCaseElementWriter = null;
 
     public constructor(public classDefinition: Class, public validatorFactory: ValidatorFactory) {
-        //let properties: Property[] = [];
         let properties: Property[] = this.classDefinition.properties || [];
         properties.forEach((property) => {
             if (property.name == 'itemTemplate') {
-                this.itemTemplateWriter = new ItemTemplateWriter(this.classDefinition.name);
+                this.specialCaseWriter = new ItemTemplateWriter(this.classDefinition.name);
             }
         });
 
-        if (classDefinition.name == 'TabView' || classDefinition.name == 'SegmentedBar') {
-            this.hardCodedItemsWriter = new HardCodedItemsWriter(this.classDefinition.name);
+        if (!this.specialCaseWriter) {
+            if (classDefinition.name == 'TabView' || classDefinition.name == 'SegmentedBar') {
+                this.specialCaseWriter = new HardCodedItemsWriter(this.classDefinition.name);
+            } else if (classDefinition.name == 'Page') {
+                this.specialCaseWriter = new PageActionBarWriter(this.classDefinition.name);
+            } else if (classDefinition.name == 'ActionBar') {
+                this.specialCaseWriter = new ActionItemsWriter(this.classDefinition.name);
+            }
         }
     }
 
     public write(xmlWriter: any) {
         this._addClassType(xmlWriter);
         this._addClassElement(xmlWriter);
+    }
+
+    private getBaseClass(): string {
+        if (this.classDefinition.name === "Page") {
+            // Skip the ContentView intermediate class to make the XSD schema work
+            // Duplicate its UIComponents group ref element
+            // emitted by PageActionBarWriter
+            return "View";
+        }
+        return this.classDefinition.baseClassNames[0].name;
     }
 
     private _addClassType(writer: any) {
@@ -180,11 +260,12 @@ export class ClassWriter {
         writer.writeAttribute("name", this.classDefinition.name);
 
         //TODO: Extract the logic of knowing about the "View" class somewhere outside?
-        if (this.classDefinition.fullName !== '"ui/core/view".View') {
+        if (this.classDefinition.fullName !== '"ui/core/view".View' &&
+            this.classDefinition.fullName !== '"ui/core/bindable".Bindable') {
             writer.startElement("xs:complexContent");
             writer.startElement("xs:extension");
 
-            writer.writeAttribute("base", this.classDefinition.baseClassNames[0].name);
+            writer.writeAttribute("base", this.getBaseClass());
 
             //TODO: The ContentView and Layout classes are special classes that can have content (and such are their inheritors like Page, ScrollView, StackLayout, etc).
             // This might be done in a better manner - create a special class with specific rendering for example?
@@ -200,11 +281,8 @@ export class ClassWriter {
                 }
                 writer.endElement();
             }
-            if (this.itemTemplateWriter) {
-                this.itemTemplateWriter.write(writer);
-            }
-            if (this.hardCodedItemsWriter) {
-                this.hardCodedItemsWriter.write(writer);
+            if (this.specialCaseWriter) {
+                this.specialCaseWriter.write(writer);
             }
             this._addClassAttributeGroup(writer);
 

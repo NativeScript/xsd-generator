@@ -4,6 +4,7 @@ import * as ts from "typescript";
 import {FileWalker} from "../lib/file-walker";
 import {JsonXsdWriter} from "../lib/json-xsd-writer";
 import {ViewExtendersFilter} from "../lib/view-extenders-filter";
+import {ActionBarFilter} from "../lib/actionbar-filter";
 
 //--------------------------------
 
@@ -12,7 +13,10 @@ function main() {
     var input:Input = inputHandler.getInput();
 
     var fileWalker = new FileWalker(input.root, input.apiFiles);
-    var theTree = fileWalker.buildTree([new ViewExtendersFilter()]);
+    var theTree = fileWalker.buildTree([
+        new ActionBarFilter(),
+        new ViewExtendersFilter(),
+    ]);
 
     var theWriter = new JsonXsdWriter();
     var rootProps = new Map<string, string>([["id", "tns"],
