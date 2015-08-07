@@ -189,13 +189,13 @@ describe("ClassWriter", () => {
 
         templatedClass.properties.push(new Property("itemTemplate", new Type("string")));
         let classWriter = new ClassWriter(templatedClass, null)
-        let templateWriter = classWriter.itemTemplateWriter;
+        let templateWriter = classWriter.specialCaseWriter;
         templateWriter.should.not.eql(null);
         templateWriter.elementName.should.eql("ListView.itemTemplate");
 
         var nonTemplatedClass = new Class("Button", '"ui/button".Button', "Class1Comments", [new Type("View")]);
         let classWriterNoTemplate = new ClassWriter(nonTemplatedClass, null);
-        (classWriterNoTemplate.itemTemplateWriter == null).should.be.true;
+        (classWriterNoTemplate.specialCaseWriter == null).should.be.true;
     });
 
     it("should create HardCodedItemsWriter, if needed", () => {
@@ -206,7 +206,7 @@ describe("ClassWriter", () => {
 
         templatedClasses.forEach((_class) => {
             let classWriter = new ClassWriter(_class, null)
-            let itemsWriter = classWriter.hardCodedItemsWriter;
+            let itemsWriter = classWriter.specialCaseWriter;
             itemsWriter.should.not.eql(null);
             itemsWriter.elementName.should.eql(_class.name + ".items");
         });
@@ -215,12 +215,12 @@ describe("ClassWriter", () => {
         var pageClass = new Class("Page", '"ui/page".Page', "Class1Comments", [new Type("View")]);
 
         let classWriter = new ClassWriter(pageClass, null)
-        let itemsWriter = classWriter.pageActionBarWriter;
+        let itemsWriter = classWriter.specialCaseWriter;
         itemsWriter.should.not.eql(null);
         itemsWriter.elementName.should.eql("Page.actionBar");
 
         var nonPageClass = new Class("Button", '"ui/button".Button', "Class1Comments", [new Type("View")]);
         let classWriterNoTemplate = new ClassWriter(nonPageClass, null);
-        (classWriterNoTemplate.pageActionBarWriter == null).should.be.true;
+        (classWriterNoTemplate.specialCaseWriter == null).should.be.true;
     });
 });

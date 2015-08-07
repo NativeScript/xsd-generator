@@ -96,7 +96,12 @@ export class UIComponentWriter {
     }
 }
 
-export class HardCodedItemsWriter {
+interface SpecialCaseElementWriter {
+    elementName: string;
+    write(xmlWriter: any): any;
+}
+
+export class HardCodedItemsWriter implements SpecialCaseElementWriter {
     public elementName: string;
 
     public constructor(public className: string) {
@@ -132,7 +137,7 @@ export class HardCodedItemsWriter {
     }
 }
 
-export class ItemTemplateWriter {
+export class ItemTemplateWriter implements SpecialCaseElementWriter {
     public elementName: string;
 
     public constructor(public className: string) {
@@ -153,7 +158,7 @@ export class ItemTemplateWriter {
     }
 }
 
-export class PageActionBarWriter {
+export class PageActionBarWriter implements SpecialCaseElementWriter {
     public elementName: string;
 
     public constructor(public className: string) {
@@ -181,7 +186,7 @@ export class PageActionBarWriter {
     }
 }
 
-export class ActionItemsWriter {
+export class ActionItemsWriter implements SpecialCaseElementWriter {
     public elementName: string;
 
     public constructor(public className: string) {
@@ -212,29 +217,24 @@ export class ActionItemsWriter {
 }
 
 export class ClassWriter {
-    public itemTemplateWriter: ItemTemplateWriter = null;
-    public hardCodedItemsWriter: HardCodedItemsWriter = null;
-    public pageActionBarWriter: PageActionBarWriter = null;
-    public actionItemsWriter: ActionItemsWriter = null;
+    public specialCaseWriter: SpecialCaseElementWriter = null;
 
     public constructor(public classDefinition: Class, public validatorFactory: ValidatorFactory) {
         let properties: Property[] = this.classDefinition.properties || [];
         properties.forEach((property) => {
             if (property.name == 'itemTemplate') {
-                this.itemTemplateWriter = new ItemTemplateWriter(this.classDefinition.name);
+                this.specialCaseWriter = new ItemTemplateWriter(this.classDefinition.name);
             }
         });
 
-        if (classDefinition.name == 'TabView' || classDefinition.name == 'SegmentedBar') {
-            this.hardCodedItemsWriter = new HardCodedItemsWriter(this.classDefinition.name);
-        }
-
-        if (classDefinition.name == 'Page') {
-            this.pageActionBarWriter = new PageActionBarWriter(this.classDefinition.name);
-        }
-
-        if (classDefinition.name == 'ActionBar') {
-            this.actionItemsWriter = new ActionItemsWriter(this.classDefinition.name);
+        if (!this.specialCaseWriter) {
+            if (classDefinition.name == 'TabView' || classDefinition.name == 'SegmentedBar') {
+                this.specialCaseWriter = new HardCodedItemsWriter(this.classDefinition.name);
+            } else if (classDefinition.name == 'Page') {
+                this.specialCaseWriter = new PageActionBarWriter(this.classDefinition.name);
+            } else if (classDefinition.name == 'ActionBar') {
+                this.specialCaseWriter = new ActionItemsWriter(this.classDefinition.name);
+            }
         }
     }
 
@@ -281,17 +281,8 @@ export class ClassWriter {
                 }
                 writer.endElement();
             }
-            if (this.itemTemplateWriter) {
-                this.itemTemplateWriter.write(writer);
-            }
-            if (this.hardCodedItemsWriter) {
-                this.hardCodedItemsWriter.write(writer);
-            }
-            if (this.pageActionBarWriter) {
-                this.pageActionBarWriter.write(writer);
-            }
-            if (this.actionItemsWriter) {
-                this.actionItemsWriter.write(writer);
+            if (this.specialCaseWriter) {
+                this.specialCaseWriter.write(writer);
             }
             this._addClassAttributeGroup(writer);
 
