@@ -303,10 +303,21 @@ export class ClassWriter {
         writer.endElement();
     }
 
+    public getProperties(): Property[] {
+        let result = this.classDefinition.properties;
+        if (this.classDefinition.name === "GridLayout") {
+            result = result.concat([
+                new Property("rows", new Type("string")),
+                new Property("columns", new Type("string")),
+            ]);
+        }
+        return result;
+    }
+
     private _addClassProperties(writer: any) {
         writer.startElement("xs:attributeGroup");
         writer.writeAttribute("name", this._getClassAttributesRefName());
-        this.classDefinition.properties.forEach((property) => {
+        this.getProperties().forEach((property) => {
             if (!this._checkOverridenProperty(property)) {
                 writer.startElement("xs:attribute");
                 writer.writeAttribute("name", property.name);

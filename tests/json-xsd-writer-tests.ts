@@ -223,4 +223,16 @@ describe("ClassWriter", () => {
         let classWriterNoTemplate = new ClassWriter(nonPageClass, null);
         (classWriterNoTemplate.specialCaseWriter == null).should.be.true;
     });
+    it("should return ApplyXmlAttributes special properties", () => {
+        var gridLayoutClass = new Class("GridLayout", '"ui/page".Page', "Class1Comments", [new Type("View")]);
+        let classWriter = new ClassWriter(gridLayoutClass, null)
+        let properties = classWriter.getProperties();
+        let propertyBag = new Map<string, string>([]);
+        properties.forEach((prop) => {
+            propertyBag.set(prop.name, prop.type.name);
+        });
+
+        propertyBag.get("rows").should.eql("string");
+        propertyBag.get("columns").should.eql("string");
+    });
 });
