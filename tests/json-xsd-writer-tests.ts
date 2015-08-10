@@ -252,4 +252,15 @@ describe("ClassWriter", () => {
         propertyBag.get("top").should.eql("number");
         propertyBag.get("dock").should.eql("string");
     });
+    it("should emit Image src 'string' property", () => {
+        var viewClass = new Class("Image", '"ui/page".Page', "Class1Comments", [new Type("View")]);
+        let classWriter = new ClassWriter(viewClass, null)
+        let properties = classWriter.getProperties();
+        let propertyBag = new Map<string, string>([]);
+        properties.forEach((prop) => {
+            propertyBag.set(prop.name, prop.type.name);
+        });
+
+        propertyBag.get("src").should.eql("string");
+    });
 });

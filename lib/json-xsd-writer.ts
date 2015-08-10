@@ -320,6 +320,10 @@ export class ClassWriter {
                 new Property("top", new Type("number")),
                 new Property("dock", new Type("string")),
             ]);
+        } else if (this.classDefinition.name === "Image") {
+            result = result.concat([
+                new Property("src", new Type("string")),
+            ]);
         }
         return result;
     }
