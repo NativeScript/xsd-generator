@@ -310,6 +310,16 @@ export class ClassWriter {
                 new Property("rows", new Type("string")),
                 new Property("columns", new Type("string")),
             ]);
+        } else if (this.classDefinition.name === "View") {
+            result = result.concat([
+                new Property("row", new Type("number")),
+                new Property("col", new Type("number")),
+                new Property("rowSpan", new Type("number")),
+                new Property("colSpan", new Type("number")),
+                new Property("left", new Type("number")),
+                new Property("top", new Type("number")),
+                new Property("dock", new Type("string")),
+            ]);
         }
         return result;
     }

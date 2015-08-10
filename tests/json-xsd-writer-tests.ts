@@ -235,4 +235,21 @@ describe("ClassWriter", () => {
         propertyBag.get("rows").should.eql("string");
         propertyBag.get("columns").should.eql("string");
     });
+    it("should emit layout attached properties on View", () => {
+        var viewClass = new Class("View", '"ui/page".Page', "Class1Comments", [new Type("View")]);
+        let classWriter = new ClassWriter(viewClass, null)
+        let properties = classWriter.getProperties();
+        let propertyBag = new Map<string, string>([]);
+        properties.forEach((prop) => {
+            propertyBag.set(prop.name, prop.type.name);
+        });
+
+        propertyBag.get("row").should.eql("number");
+        propertyBag.get("col").should.eql("number");
+        propertyBag.get("colSpan").should.eql("number");
+        propertyBag.get("rowSpan").should.eql("number");
+        propertyBag.get("left").should.eql("number");
+        propertyBag.get("top").should.eql("number");
+        propertyBag.get("dock").should.eql("string");
+    });
 });
