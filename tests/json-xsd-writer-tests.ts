@@ -3,7 +3,7 @@ import {
     JsonXsdWriter,
     ValidatorWriter,
     ClassWriter,
-    ItemTemplateWriter,
+    ItemsWriter,
     HardCodedItemsWriter
 } from "../lib/json-xsd-writer";
 import {Tree, Class, Property, Type} from "../lib/lang-elements";
@@ -184,7 +184,7 @@ describe("ValidatorWriter", () => {
 });
 
 describe("ClassWriter", () => {
-    it("should create ItemTemplateWriter, if needed", () => {
+    it("should create ItemsWriter, if needed", () => {
         var templatedClass = new Class("ListView", '"ui/list-view".ListView', "Class1Comments", [new Type("View")]);
 
         templatedClass.properties.push(new Property("itemTemplate", new Type("string")));

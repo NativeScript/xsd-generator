@@ -6,6 +6,7 @@ import {Utils} from "./globals";
 export class JsonXsdWriter {
     private _validatorFactory: ValidatorFactory;
     private excludedUIComponents: Map<string, boolean>;
+    private layoutComponents: Map<string, boolean>;
 
     constructor() {
         this._validatorFactory= new ValidatorFactory();
@@ -21,6 +22,15 @@ export class JsonXsdWriter {
             "ActionItemBase",
             "Bindable",
         ].forEach((excluded) => this.excludedUIComponents.set(excluded, true))
+
+        this.layoutComponents = new Map<string, boolean>([]);
+        [
+            "StackLayout",
+            "GridLayout",
+            "WrapLayout",
+            "DockLayout",
+            "AbsoluteLayout",
+        ].forEach((excluded) => this.layoutComponents.set(excluded, true))
     }
 
     public parse(rootName: string, tree: Tree, rootAttributes?: Map<string, string>): string {
@@ -37,6 +47,7 @@ export class JsonXsdWriter {
         this.processClasses(writer, tree.Classes);
         this.writeValidators(writer, this.validatorFactory.getRegisteredValidators());
         this.writeUIComponents(writer, tree.Classes);
+        this.writeUILayouts(writer, tree.Classes);
         writer.endDocument();
         return writer.toString();
     }
@@ -70,12 +81,32 @@ export class JsonXsdWriter {
             !this.excludedUIComponents.has(_class.name)).map((_class) =>
                 new UIComponentWriter(_class));
     }
+
+    public getUILayoutWriters(classes: Class[]) {
+        return classes.filter((_class) =>
+            this.layoutComponents.has(_class.name)).map((_class) =>
+                new UIComponentWriter(_class));
+    }
+
     private writeUIComponents(writer: any, _classes: Class[]) {
         writer.startElement("xs:group");
         writer.writeAttribute("name", "UIComponents");
         writer.startElement("xs:choice");
 
         this.getUIComponentWriters(_classes).forEach((uiWriter) => {
+            uiWriter.write(writer);
+        });
+
+        writer.endElement();
+        writer.endElement();
+    }
+
+    private writeUILayouts(writer: any, _classes: Class[]) {
+        writer.startElement("xs:group");
+        writer.writeAttribute("name", "UILayouts");
+        writer.startElement("xs:choice");
+
+        this.getUILayoutWriters(_classes).forEach((uiWriter) => {
             uiWriter.write(writer);
         });
 
@@ -137,23 +168,38 @@ export class HardCodedItemsWriter implements SpecialCaseElementWriter {
     }
 }
 
-export class ItemTemplateWriter implements SpecialCaseElementWriter {
+export class ItemsWriter implements SpecialCaseElementWriter {
     public elementName: string;
+    public layoutName: string;
 
-    public constructor(public className: string) {
+    public constructor(public className: string, public hasItemTemplate: boolean, public hasItemsLayout: boolean) {
         this.elementName = `${className}.itemTemplate`;
+        this.layoutName = `${className}.itemsLayout`;
     }
 
     public write(xmlWriter: any) {
-        xmlWriter.startElement("xs:choice");
-        xmlWriter.startElement("xs:element");
-        xmlWriter.writeAttribute("name", this.elementName);
+        xmlWriter.startElement("xs:all");
+            if (this.hasItemTemplate) {
+                xmlWriter.startElement("xs:element");
+                    xmlWriter.writeAttribute("name", this.elementName);
+                    xmlWriter.writeAttribute("maxOccurs", "1");
 
-        xmlWriter.startElement("xs:complexType");
-        ClassWriter.writeUIComponentsChildGroup(xmlWriter);
-        xmlWriter.endElement();
+                    xmlWriter.startElement("xs:complexType");
+                        ClassWriter.writeUIComponentsChildGroup(xmlWriter);
+                    xmlWriter.endElement();
+                xmlWriter.endElement();
+            }
 
-        xmlWriter.endElement();
+            if (this.hasItemsLayout) {
+                xmlWriter.startElement("xs:element");
+                    xmlWriter.writeAttribute("name", this.layoutName);
+                    xmlWriter.writeAttribute("maxOccurs", "1");
+
+                    xmlWriter.startElement("xs:complexType");
+                        ClassWriter.writeUILayoutsChildGroup(xmlWriter);
+                    xmlWriter.endElement();
+                xmlWriter.endElement();
+            }
         xmlWriter.endElement();
     }
 }
@@ -221,11 +267,21 @@ export class ClassWriter {
 
     public constructor(public classDefinition: Class, public validatorFactory: ValidatorFactory) {
         let properties: Property[] = this.classDefinition.properties || [];
+        let hasItemTemplate = false;
+        let hasItemsLayout = false;
+
         properties.forEach((property) => {
             if (property.name == 'itemTemplate') {
-                this.specialCaseWriter = new ItemTemplateWriter(this.classDefinition.name);
+                hasItemTemplate = true;
+            }
+            if (property.name == 'itemsLayout') {
+                hasItemsLayout = true;
             }
         });
+
+        if (hasItemTemplate || hasItemsLayout) {
+            this.specialCaseWriter = new ItemsWriter(this.classDefinition.name, hasItemTemplate, hasItemsLayout);
+        }
 
         if (!this.specialCaseWriter) {
             if (classDefinition.name == 'TabView' || classDefinition.name == 'SegmentedBar') {
@@ -299,6 +355,14 @@ export class ClassWriter {
     public static writeUIComponentsChildGroup(writer: any, maxOccurs: string = "1") {
         writer.startElement("xs:group");
         writer.writeAttribute("ref", "UIComponents");
+        writer.writeAttribute("minOccurs", "0");
+        writer.writeAttribute("maxOccurs", maxOccurs);
+        writer.endElement();
+    }
+
+    public static writeUILayoutsChildGroup(writer: any, maxOccurs: string = "1") {
+        writer.startElement("xs:group");
+        writer.writeAttribute("ref", "UILayouts");
         writer.writeAttribute("maxOccurs", maxOccurs);
         writer.endElement();
     }

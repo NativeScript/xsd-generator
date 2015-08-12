@@ -60,6 +60,7 @@ debugger;
             case "boolean":
                 return this._retrieveValidator("BooleanValidator", () => { return new BooleanValidator() });
             case '"ui/layouts/layout".Layout':
+            case '"ui/layouts/layout-base".LayoutBase':
                 return this._retrieveValidator("LayoutNamesValidator", () => { return new LayoutNamesValidator() });
             case "string":
             case "style":

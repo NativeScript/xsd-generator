@@ -36,5 +36,16 @@
       <Label text="{{ author ? 'by ' + author : '' }}" cssClass="author" col="1" row="1" />
       <Label text="{{ num_comments ? num_comments + ' comments' : '' }}" cssClass="comments" col="2" row="1" />
     </GridLayout>
+
+    <Repeater>
+      <Repeater.itemsLayout>
+        <WrapLayout />
+      </Repeater.itemsLayout>
+      <Repeater.itemTemplate>
+        <GridLayout width="94" height="94" >
+          <Button text="{{ text }}" tap="{{ tapItem }}" />
+        </GridLayout>
+      </Repeater.itemTemplate>
+    </Repeater>
   </StackLayout>
 </Page>
