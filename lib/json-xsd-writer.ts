@@ -215,6 +215,7 @@ export class ItemsWriter implements SpecialCaseElementWriter {
             if (this.hasItemTemplate) {
                 xmlWriter.startElement("xs:element");
                     xmlWriter.writeAttribute("name", this.elementName);
+                    xmlWriter.writeAttribute("minOccurs", "0");
                     xmlWriter.writeAttribute("maxOccurs", "1");
 
                     xmlWriter.startElement("xs:complexType");
