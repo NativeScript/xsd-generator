@@ -388,6 +388,10 @@ export class ClassWriter {
             result = result.concat([
                 new Property("src", new Type("string")),
             ]);
+        } else if (this.classDefinition.name === "ListView") {
+            result = result.concat([
+                new Property("items", new Type("string")),
+            ]);
         }
         return result;
     }

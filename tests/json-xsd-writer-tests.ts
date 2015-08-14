@@ -263,4 +263,17 @@ describe("ClassWriter", () => {
 
         propertyBag.get("src").should.eql("string");
     });
+
+    it("should emit items property on ListView", () => {
+        var viewClass = new Class("ListView", '"ui/page".Page', "Class1Comments", [new Type("View")]);
+        let classWriter = new ClassWriter(viewClass, null)
+        let properties = classWriter.getProperties();
+        let propertyBag = new Map<string, string>([]);
+        properties.forEach((prop) => {
+            console.log(prop.name);
+            propertyBag.set(prop.name, prop.type.name);
+        });
+
+        propertyBag.get("items").should.eql("string");
+    });
 });
