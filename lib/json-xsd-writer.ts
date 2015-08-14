@@ -153,16 +153,49 @@ export class HardCodedItemsWriter implements SpecialCaseElementWriter {
                             xmlWriter.writeAttribute("maxOccurs", "unbounded");
 
                             xmlWriter.startElement("xs:complexType");
-                                xmlWriter.startElement("xs:attribute");
-                                    xmlWriter.writeAttribute("name", "title");
-                                    xmlWriter.writeAttribute("type", "StringValidator");
-                                xmlWriter.endElement();
+                                if (this.className === 'TabView') {
+                                    this.tabViewItemWithChildView(xmlWriter);
+                                } else {
+                                    this.simpleTitleAttribute(xmlWriter);
+                                }
                             xmlWriter.endElement();
                         xmlWriter.endElement();
 
                     xmlWriter.endElement();
                 xmlWriter.endElement();
 
+            xmlWriter.endElement();
+        xmlWriter.endElement();
+    }
+
+    private simpleTitleAttribute(xmlWriter: any) {
+        xmlWriter.startElement("xs:attribute");
+            xmlWriter.writeAttribute("name", "title");
+            xmlWriter.writeAttribute("type", "StringValidator");
+        xmlWriter.endElement();
+    }
+
+    private tabViewItemWithChildView(xmlWriter: any) {
+        xmlWriter.startElement("xs:complexContent")
+            xmlWriter.startElement("xs:extension")
+                xmlWriter.writeAttribute("base", "View");
+                    xmlWriter.startElement("xs:all");
+                        xmlWriter.startElement("xs:element");
+                            xmlWriter.writeAttribute("name", "TabViewItem.view");
+                            xmlWriter.writeAttribute("minOccurs", "0");
+                            xmlWriter.writeAttribute("maxOccurs", "1");
+
+                            xmlWriter.startElement("xs:complexType")
+                                ClassWriter.writeUIComponentsChildGroup(xmlWriter, "1");
+                            xmlWriter.endElement()
+                        xmlWriter.endElement();
+
+                    xmlWriter.endElement();
+
+                    xmlWriter.startElement("xs:attribute");
+                        xmlWriter.writeAttribute("name", "title");
+                        xmlWriter.writeAttribute("type", "StringValidator");
+                    xmlWriter.endElement();
             xmlWriter.endElement();
         xmlWriter.endElement();
     }
