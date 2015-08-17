@@ -4,6 +4,7 @@
   "ref": "master",
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
+  "token": "202d1af3eca79b890829e4724b03c73afa13d470",
   "installed": {
     "mocha/mocha.d.ts": {
       "commit": "ac3a1f059f655059484d6aa5ba1f0f85908ae06c"
