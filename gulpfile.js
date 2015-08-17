@@ -1,10 +1,17 @@
 var gulp = require("gulp");
 var ts = require("gulp-typescript");
 
-var tsSrc = ["bin/**/*.ts", "lib/**/*.ts", "tests/**/*.ts", "typings/**/*.ts", "customtypings/**/*.ts", "!tests/resources/**/*.*"];
+var tsSrc = [
+    "bin/**/*.ts",
+    "lib/**/*.ts",
+    "tests/**/*.ts",
+    "typings/**/*.ts",
+    "customtypings/**/*.ts",
+    "!tests/resources/**/*.*"
+];
 var outDir = "./dist";
 
-gulp.task("default", function() {
+gulp.task("compile", function() {
     var tsResult = gulp.src(tsSrc).pipe(
             ts({
                 noEmitOnError: true,
@@ -19,3 +26,11 @@ gulp.task("default", function() {
             }));
     return tsResult.js.pipe(gulp.dest(outDir));
 });
+
+gulp.task("copy-package-json", function() {
+    gulp.src("./package.json")
+    // Perform minification tasks, etc here
+    .pipe(gulp.dest(outDir + "/lib"));
+});
+
+gulp.task("default", ["compile", "copy-package-json"]);

@@ -36,6 +36,7 @@ export class JsonXsdWriter {
     public parse(rootName: string, tree: Tree, rootAttributes?: Map<string, string>): string {
         var writer = new (<any>XmlWriter)(true);
         writer.startDocument();
+        this.writeVersion(writer);
         writer.startElement(rootName);
 
         if (rootAttributes) {
@@ -50,6 +51,11 @@ export class JsonXsdWriter {
         this.writeUILayouts(writer, tree.Classes);
         writer.endDocument();
         return writer.toString();
+    }
+
+    public writeVersion(xmlWriter: any) {
+        var packageInfo = require("./package.json");
+        xmlWriter.writeComment(`SCHEMA VERSION: ${packageInfo.version}`);
     }
 
     private get validatorFactory(): ValidatorFactory{
