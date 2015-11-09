@@ -2,7 +2,6 @@
 
 rm -rf dist
 mkdir dist
-gulp
 
 executable=node
 mochadebug=
@@ -11,17 +10,21 @@ if [ "$1" == '--debug' ] ; then
     mochadebug=--debug
 fi
 
-node_modules/mocha/bin/mocha $mochadebug dist/tests/*.js
-
 nsrepodir=/Users/erjan/work/github/nativescript/nativescript
-packagename=tns-definitions-1.3.0.tgz
+packagename=tns-core-modules-1.5.0.tgz
 localinputsdir=theinputs
+
 #(cd $nsrepodir && grunt --runtslint=false)
 cp $nsrepodir/bin/dist/$packagename .
 tar -xzvf $packagename
 rm $packagename
 rm -rf $localinputsdir
 mv package $localinputsdir
+
+# Execute the compilation AFTER we have the source files copied so that
+#   the package.json file exists!
+gulp
+node_modules/mocha/bin/mocha $mochadebug dist/tests/*.js
 
 $executable dist/bin/generate-xsd.js -r ./theinputs -o ./schema.xsd
 

@@ -32,7 +32,8 @@ gulp.task("compile", function() {
 gulp.task("copy-package-json", function() {
     gulp.src(path.join(definitionsDir, "package.json"))
     // Perform minification tasks, etc here
-    .pipe(gulp.dest(outDir + "/lib"));
+    .pipe(gulp.dest(outDir + "/lib/"))
+    .pipe(gulp.dest(outDir + "/tests/"));
 });
 
 gulp.task("default", ["compile", "copy-package-json"]);
