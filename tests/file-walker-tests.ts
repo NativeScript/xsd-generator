@@ -19,7 +19,7 @@ describe("InputHandler run", () => {
                 return {
                     i: <string[]> [],
                     f: <string[]> [],
-                    o: "schema.xsd",
+                    o: "tns.xsd",
                     r: "tests/resources"
                 };
             };
@@ -52,7 +52,7 @@ describe("FileWalker", () => {
             return {
                 i: <string[]> [],
                 f: <string[]> [],
-                o: "schema.xsd",
+                o: "tns.xsd",
                 r: "tests/resources"
             };
         };

@@ -26,7 +26,7 @@ mv package $localinputsdir
 gulp
 node_modules/mocha/bin/mocha $mochadebug dist/tests/*.js
 
-$executable dist/bin/generate-xsd.js -r ./theinputs -o ./schema.xsd
+$executable dist/bin/generate-xsd.js -r ./theinputs -o ./tns.xsd
 
 rm -rf $localinputsdir
 

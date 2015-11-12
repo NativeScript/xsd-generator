@@ -17,7 +17,7 @@ describe("ViewExtendersFilter", () => {
             return {
                 i: <string[]> [],
                 f: <string[]> [],
-                o: "schema.xsd",
+                o: "tns.xsd",
                 r: "tests/resources"
             };
         };

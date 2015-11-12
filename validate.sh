@@ -2,4 +2,4 @@
 
 file=./to-validate.xml
 
-xmllint --schema schema.xsd $file
+xmllint --schema tns.xsd $file

@@ -24,6 +24,6 @@ mkdir dist
 nbin gulp
 nbin mocha dist/tests/*.js
 
-node dist/bin/generate-xsd.js -r ./theinputs -o ./schema.xsd
+node dist/bin/generate-xsd.js -r ./theinputs -o ./tns.xsd
 
 ./validate.sh
