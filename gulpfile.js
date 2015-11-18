@@ -1,6 +1,7 @@
 var path = require("path");
 var gulp = require("gulp");
 var ts = require("gulp-typescript");
+var jsonEditor = require("gulp-json-editor");
 var definitionsDir = process.env.DEFINITIONS_DIR || "./theinputs"
 
 var tsSrc = [
@@ -34,6 +35,18 @@ gulp.task("copy-package-json", function() {
     // Perform minification tasks, etc here
     .pipe(gulp.dest(outDir + "/lib/"))
     .pipe(gulp.dest(outDir + "/tests/"));
+});
+
+gulp.task("update-target-package-json", function() {
+    var sourcePackageJson = require("./" + path.join(definitionsDir, "package.json"));
+
+    targetPackageJsonPath = path.join("NpmPackage", "package.json");
+    gulp.src(targetPackageJsonPath)
+        .pipe(jsonEditor(function(json) {
+            json.version = sourcePackageJson.version;
+            return json;
+        }))
+    .pipe(gulp.dest("./NpmPackage"))
 });
 
 gulp.task("default", ["compile", "copy-package-json"]);
