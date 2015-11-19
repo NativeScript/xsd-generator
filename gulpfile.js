@@ -44,6 +44,7 @@ gulp.task("update-target-package-json", function() {
     gulp.src(targetPackageJsonPath)
         .pipe(jsonEditor(function(json) {
             json.version = sourcePackageJson.version;
+            json.dependencies["tns-core-modules"] = sourcePackageJson.version;
             return json;
         }))
     .pipe(gulp.dest("./NpmPackage"))
