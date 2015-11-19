@@ -7,4 +7,4 @@ schema.xsd
 tns.xsd
 theinputs
 *.js
-nativescript*.tgz
+tns-*.tgz
