@@ -10,7 +10,8 @@ nbin () {
 nbin tsd reinstall
 
 export NSREPO=${1:-../nativescript}
-export REBUILD=true
+# Don't rebuild package
+export REBUILD=
 
 ./run.sh
 

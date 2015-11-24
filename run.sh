@@ -13,7 +13,6 @@ if [ "$1" == '--debug' ] ; then
 fi
 
 export NSREPO=${NSREPO:-../nativescript}
-echo "NSREPO=$NSREPO"
 NSPACKAGEBASE=tns-core-modules
 PACKAGEDIR=node_modules/tns-core-modules
 
