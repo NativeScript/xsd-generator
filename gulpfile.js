@@ -2,7 +2,7 @@ var path = require("path");
 var gulp = require("gulp");
 var ts = require("gulp-typescript");
 var jsonEditor = require("gulp-json-editor");
-var definitionsDir = process.env.DEFINITIONS_DIR || "./theinputs"
+var definitionsDir = process.env.NSREPO || "node_modules/tns-core-modules"
 
 var tsSrc = [
     "bin/**/*.ts",

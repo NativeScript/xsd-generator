@@ -12,9 +12,9 @@ if [ "$1" == '--debug' ] ; then
     mochadebug=--debug
 fi
 
-export NSREPO=${NSREPO:-/Users/erjan/work/github/nativescript/nativescript}
+export NSREPO=${NSREPO:-../nativescript}
 echo "NSREPO=$NSREPO"
-NSPACKAGE=tns-core-modules-1.5.0.tgz
+NSPACKAGEBASE=tns-core-modules
 PACKAGEDIR=node_modules/tns-core-modules
 
 build() {
@@ -27,7 +27,7 @@ if [ ! -z "$REBUILD" ] ; then
     build
 fi
 
-npm install "$NSREPO/bin/dist/$NSPACKAGE"
+npm install "$NSREPO/bin/dist/"$NSPACKAGEBASE*.tgz
 
 # Execute the compilation AFTER we have the source files copied so that
 #   the package.json file exists!
