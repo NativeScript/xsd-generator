@@ -32,8 +32,9 @@ npm install "$NSREPO/bin/dist/$NSPACKAGE"
 # Execute the compilation AFTER we have the source files copied so that
 #   the package.json file exists!
 gulp
+
 node_modules/mocha/bin/mocha $mochadebug dist/tests/*.js
 
-#$NODE dist/bin/generate-xsd.js -r $PACKAGEDIR -o ./tns.xsd
+$NODE dist/bin/generate-xsd.js -r $PACKAGEDIR -o ./tns.xsd
 
-#./validate.sh
+./validate.sh

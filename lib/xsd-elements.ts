@@ -76,7 +76,11 @@ debugger;
             case '"ui/action-bar".ActionBar':
                 return this._retrieveValidator("StringValidator", () => { return new StringValidator() });
             default:
-                throw new Error(`No validator for type ${type.fullName}!`);
+                if (/string\s*\|/.test(type.fullName) || /\|\s*string/.test(type.fullName)) {
+                    return this._retrieveValidator("StringValidator", () => { return new StringValidator() });
+                } else {
+                    throw new Error(`No validator for type ${type.fullName}!`);
+                }
         }
     }
 }
