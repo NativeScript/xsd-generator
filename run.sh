@@ -26,7 +26,13 @@ if [ ! -z "$REBUILD" ] ; then
     build
 fi
 
-npm install "$NSREPO/bin/dist/"$NSPACKAGEBASE*.tgz
+if [ -f "$NSREPO/"$NSPACKAGEBASE*.tgz ] ; then
+    echo "ROOT DIR"
+    npm install "$NSREPO/"$NSPACKAGEBASE*.tgz
+else
+    echo "BIN/DIST"
+    npm install "$NSREPO/bin/dist/"$NSPACKAGEBASE*.tgz
+fi
 
 # Execute the compilation AFTER we have the source files copied so that
 #   the package.json file exists!
