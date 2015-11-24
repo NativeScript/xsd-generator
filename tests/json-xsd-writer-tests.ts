@@ -18,7 +18,7 @@ var aDummyThing = should;
 describe("JsonXsdWriter", () => {
     describe("run on a simple class", () => {
         it("should add a complexTypeNode with an attributeGroup named after the class name with first letter of the attribute ref name small case", (done) => {
-            var writer = new JsonXsdWriter();
+            var writer = new JsonXsdWriter("1.5.0");
 
             var newClass = new Class("Class1Name", "Class1FullName", "Class1Comments", [new Type("Class1BaseClass1")]);
 
@@ -57,14 +57,14 @@ describe("JsonXsdWriter", () => {
                 tree.addClass(badClass);
             })
 
-            var writer = new JsonXsdWriter();
+            var writer = new JsonXsdWriter("1.5.0");
             let uiWriters = writer.getUIComponentWriters(tree.Classes);
 
             uiWriters.length.should.eql(1);
             done()
         })
         it("should create an attribute group with the properties of the class", () => {
-            var writer = new JsonXsdWriter();
+            var writer = new JsonXsdWriter("1.5.0");
 
             var newClass = new Class("Class1Name", "Class1FullName", "Class1Comments", [new Type("Class1BaseClass1")]);
 
@@ -77,7 +77,7 @@ describe("JsonXsdWriter", () => {
             content.should.match(/.*<xs:attributeGroup name="class1NameAttributes">[\n\s]*<xs:attribute name="Prop1Name" type="[^"]*"\/>[\n\s]*<\/xs:attributeGroup>.*/mg);
         });
         it("should create an attribute group with the properties of the class and the proper validator", () => {
-            var writer = new JsonXsdWriter();
+            var writer = new JsonXsdWriter("1.5.0");
 
             var newClass = new Class("Class1Name", "Class1FullName", "Class1Comments", [new Type("Class1BaseClass1")]);
 
@@ -90,7 +90,7 @@ describe("JsonXsdWriter", () => {
             content.should.match(/.*<xs:attributeGroup name="class1NameAttributes">[\n\s]*<xs:attribute name="Prop1Name" type="StringValidator"\/>[\n\s]*<\/xs:attributeGroup>.*/mg);
         });
         it("should create an element along with the type", (done) => {
-            var writer = new JsonXsdWriter();
+            var writer = new JsonXsdWriter("1.5.0");
 
             var newClass = new Class("Class1Name", "Class1FullName", "Class1Comments", [new Type("Class1BaseClass1")]);
 

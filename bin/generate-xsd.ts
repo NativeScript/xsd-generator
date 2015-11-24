@@ -18,7 +18,7 @@ function main() {
         new ViewExtendersFilter(),
     ]);
 
-    var theWriter = new JsonXsdWriter();
+    var theWriter = new JsonXsdWriter(input.version);
     var rootProps = new Map<string, string>([["id", "tns"],
                              ["xmlns:xs", "http://www.w3.org/2001/XMLSchema"],
                              ["targetNamespace", "http://schemas.nativescript.org/tns.xsd"],

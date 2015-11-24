@@ -7,6 +7,7 @@ import _ = require("underscore");
 
 export interface Input {
     root: string;
+    version: string;
     apiFiles: string[];
     outFilePath: string;
 }
@@ -67,8 +68,12 @@ export class InputHandler {
         apiFiles = this._filterNonPublicAPIs(root, apiFiles);
         apiFiles = this._unixifyPaths(apiFiles);
 
+        var packageJson = fs.readFileSync(pathModule.join(root, "package.json"), "utf-8");
+        var packageInfo = JSON.parse(packageJson);
+
         return <Input> {
             root: root,
+            version: packageInfo.version,
             apiFiles: apiFiles,
             outFilePath: outputFilePath
         };

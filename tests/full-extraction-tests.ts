@@ -55,7 +55,7 @@ describe("Walking and outputting", () => {
 
             adjustPropertyTypeNames(tree.Classes);
 
-            var writer = new JsonXsdWriter();
+            var writer = new JsonXsdWriter("1.5.0");
             var content = writer.parse("someRoot", tree);
 
             content.should.match(/.*<xs:simpleType name="BindingValidator">.*/);
@@ -65,7 +65,7 @@ describe("Walking and outputting", () => {
 
             adjustPropertyTypeNames(tree.Classes);
 
-            var writer = new JsonXsdWriter();
+            var writer = new JsonXsdWriter("1.5.0");
             var content = writer.parse("someRoot", tree);
 
             parseString(content, (err, data) => {
@@ -86,7 +86,7 @@ describe("Walking and outputting", () => {
 
             adjustPropertyTypeNames(tree.Classes);
 
-            var writer = new JsonXsdWriter();
+            var writer = new JsonXsdWriter("1.5.0");
             var content = writer.parse("someRoot", tree);
 
             parseString(content, (err, data) => {
@@ -106,7 +106,7 @@ describe("Walking and outputting", () => {
 
             adjustPropertyTypeNames(tree.Classes);
 
-            var writer = new JsonXsdWriter();
+            var writer = new JsonXsdWriter("1.5.0");
             var content = writer.parse("someRoot", tree);
 
             parseString(content, (err, data) => {

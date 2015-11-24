@@ -8,7 +8,7 @@ export class JsonXsdWriter {
     private excludedUIComponents: Map<string, boolean>;
     private layoutComponents: Map<string, boolean>;
 
-    constructor() {
+    constructor(public version: string) {
         this._validatorFactory= new ValidatorFactory();
         this.excludedUIComponents = new Map<string, boolean>([]);
         [
@@ -54,8 +54,7 @@ export class JsonXsdWriter {
     }
 
     public writeVersion(xmlWriter: any) {
-        var packageInfo = require("./package.json");
-        xmlWriter.writeComment(`SCHEMA VERSION: ${packageInfo.version}`);
+        xmlWriter.writeComment(`SCHEMA VERSION: ${this.version}`);
     }
 
     private get validatorFactory(): ValidatorFactory{
