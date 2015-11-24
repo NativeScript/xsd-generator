@@ -1,33 +1,39 @@
-#! /bin/bash
+#!/bin/bash
+
+set -e
 
 rm -rf dist
 mkdir dist
 
-executable=node
+NODE=node
 mochadebug=
 if [ "$1" == '--debug' ] ; then
-    executable=node-debug
+    NODE=node-debug
     mochadebug=--debug
 fi
 
-nsrepodir=/Users/erjan/work/github/nativescript/nativescript
-packagename=tns-core-modules-1.5.0.tgz
-localinputsdir=theinputs
+export NSREPO=${NSREPO:-/Users/erjan/work/github/nativescript/nativescript}
+echo "NSREPO=$NSREPO"
+NSPACKAGE=tns-core-modules-1.5.0.tgz
+PACKAGEDIR=node_modules/tns-core-modules
 
-#(cd $nsrepodir && grunt --runtslint=false)
-cp $nsrepodir/bin/dist/$packagename .
-tar -xzvf $packagename
-rm $packagename
-rm -rf $localinputsdir
-mv package $localinputsdir
+build() {
+    (cd "$NSREPO" && \
+        npm install && \
+        grunt --runtslint=false --test-app-only)
+}
+
+if [ ! -z "$REBUILD" ] ; then
+    build
+fi
+
+npm install "$NSREPO/bin/dist/$NSPACKAGE"
 
 # Execute the compilation AFTER we have the source files copied so that
 #   the package.json file exists!
 gulp
 node_modules/mocha/bin/mocha $mochadebug dist/tests/*.js
 
-$executable dist/bin/generate-xsd.js -r ./theinputs -o ./tns.xsd
+#$NODE dist/bin/generate-xsd.js -r $PACKAGEDIR -o ./tns.xsd
 
-rm -rf $localinputsdir
-
-./validate.sh
+#./validate.sh
