@@ -27,10 +27,10 @@ if [ ! -z "$REBUILD" ] ; then
 fi
 
 if [ -f "$NSREPO/"$NSPACKAGEBASE*.tgz ] ; then
-    echo "ROOT DIR"
+    echo "Found tns-core-modules in root dir."
     npm install "$NSREPO/"$NSPACKAGEBASE*.tgz
 else
-    echo "BIN/DIST"
+    echo "Found tns-core-modules in bin/dist"
     npm install "$NSREPO/bin/dist/"$NSPACKAGEBASE*.tgz
 fi
 
