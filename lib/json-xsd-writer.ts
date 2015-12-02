@@ -424,6 +424,7 @@ export class ClassWriter {
                 new Property("left", new Type("number")),
                 new Property("top", new Type("number")),
                 new Property("dock", new Type("string")),
+                new Property("class", new Type("string")),
             ]);
         } else if (this.classDefinition.name === "Image") {
             result = result.concat([
