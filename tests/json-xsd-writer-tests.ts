@@ -251,6 +251,7 @@ describe("ClassWriter", () => {
         propertyBag.get("left").should.eql("number");
         propertyBag.get("top").should.eql("number");
         propertyBag.get("dock").should.eql("string");
+        propertyBag.get("class").should.eql("string");
     });
     it("should emit Image src 'string' property", () => {
         var viewClass = new Class("Image", '"ui/page".Page', "Class1Comments", [new Type("View")]);
