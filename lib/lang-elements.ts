@@ -70,6 +70,10 @@ export class Class {
     public get name(): string {
         return this._name;
     }
+    
+    public get kebabName(): string {
+        return this._name.split("-").map(s => { return s[0].toUpperCase() + s.substring(1) }).join("");;
+    }
 
     public get fullName(): string {
         return this._fullName;

@@ -81,12 +81,12 @@ export class JsonXsdWriter {
         });
     }
 
-    public getUIComponentWriters(classes: Class[]) {
+    public getUIComponentWriters(classes: Class[], isKebabCase?: boolean) {
         return classes.filter((_class) =>
-            !this.excludedUIComponents.has(_class.name)).map((_class) =>
+            !this.excludedUIComponents.has(isKebabCase ? _class.kebabName : _class.name)).map((_class) =>
                 new UIComponentWriter(_class));
     }
-
+    
     public getUILayoutWriters(classes: Class[]) {
         return classes.filter((_class) =>
             this.layoutComponents.has(_class.name)).map((_class) =>
@@ -99,6 +99,10 @@ export class JsonXsdWriter {
         writer.startElement("xs:choice");
 
         this.getUIComponentWriters(_classes).forEach((uiWriter) => {
+            uiWriter.write(writer);
+        });
+        
+        this.getUIComponentWriters(_classes, true).forEach((uiWriter) => {
             uiWriter.write(writer);
         });
 
@@ -338,6 +342,7 @@ export class ClassWriter {
     public write(xmlWriter: any) {
         this._addClassType(xmlWriter);
         this._addClassElement(xmlWriter);
+        this._addClassElement(xmlWriter, true);
     }
 
     private getBaseClass(): string {
@@ -453,9 +458,9 @@ export class ClassWriter {
     }
 
 
-    private _addClassElement(writer:any) {
+    private _addClassElement(writer:any, isKebabCase? : boolean) {
         writer.startElement("xs:element");
-        writer.writeAttribute("name", this.classDefinition.name);
+        writer.writeAttribute("name", isKebabCase ? this.classDefinition.kebabName : this.classDefinition.name);
         writer.writeAttribute("type", this.classDefinition.name);
         writer.endElement();
     }
