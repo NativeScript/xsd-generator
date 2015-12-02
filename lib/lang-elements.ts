@@ -72,7 +72,7 @@ export class Class {
     }
     
     public get kebabName(): string {
-        return this._name.split("-").map(s => { return s[0].toUpperCase() + s.substring(1) }).join("");;
+        return this._name.split(/(?=[A-Z])/).join("-").toLowerCase();
     }
 
     public get fullName(): string {
