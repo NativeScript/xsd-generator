@@ -70,6 +70,10 @@ export class Class {
     public get name(): string {
         return this._name;
     }
+    
+    public get kebabName(): string {
+        return this._name.split(/(?=[A-Z])/).join("-").toLowerCase();
+    }
 
     public get fullName(): string {
         return this._fullName;
