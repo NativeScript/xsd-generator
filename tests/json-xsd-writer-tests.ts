@@ -33,9 +33,12 @@ describe("JsonXsdWriter", () => {
                 data.rootName["xs:complexType"][0].$.name.should.eql("Class1Name");
                 data.rootName["xs:attributeGroup"].length.should.eql(1);
                 data.rootName["xs:attributeGroup"][0].$.name.should.eql("class1NameAttributes");
-                data.rootName["xs:element"].length.should.eql(1);
+                data.rootName["xs:element"].length.should.eql(2);
                 data.rootName["xs:element"][0].$.name.should.eql("Class1Name");
                 data.rootName["xs:element"][0].$.type.should.eql("Class1Name");
+                data.rootName["xs:element"][1].$.name.should.eql("class1-name");
+                data.rootName["xs:element"][1].$.type.should.eql("Class1Name");
+
                 done();
             });
         });
@@ -104,9 +107,11 @@ describe("JsonXsdWriter", () => {
                 data.rootName["xs:complexType"][0].$.name.should.eql("Class1Name");
                 data.rootName["xs:attributeGroup"].length.should.eql(1);
                 data.rootName["xs:attributeGroup"][0].$.name.should.eql("class1NameAttributes");
-                data.rootName["xs:element"].length.should.eql(1);
+                data.rootName["xs:element"].length.should.eql(2);
                 data.rootName["xs:element"][0].$.name.should.eql("Class1Name");
                 data.rootName["xs:element"][0].$.type.should.eql("Class1Name");
+                data.rootName["xs:element"][1].$.name.should.eql("class1-name");
+                data.rootName["xs:element"][1].$.type.should.eql("Class1Name");
                 done();
             });
 
