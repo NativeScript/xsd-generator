@@ -42,4 +42,4 @@ node_modules/mocha/bin/mocha $mochadebug dist/tests/*.js
 
 $NODE dist/bin/generate-xsd.js -r $PACKAGEDIR -o ./tns.xsd
 
-./validate.sh
+gulp run-regression-tests
