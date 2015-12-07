@@ -50,4 +50,15 @@ gulp.task("update-target-package-json", function() {
     .pipe(gulp.dest("./NpmPackage"))
 });
 
+gulp.task("run-regression-tests", function() {
+    var exec = require("gulp-exec");
+
+    var options = {
+        continueOnError: false,
+        pipeStdout: false
+    };
+    return gulp.src("regression-xmls/**/*.xml")
+        .pipe(exec("xmllint --schema tns.xsd <%= file.path %>", options));
+});
+
 gulp.task("default", ["compile", "copy-package-json"]);
