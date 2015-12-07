@@ -392,7 +392,9 @@ export class ClassWriter {
                 } else {
                     ClassWriter.writeUIComponentsChildGroup(writer, "unbounded");
                 }
-                ClassWriter.writeCustomComponentAllowance(writer);
+                if (this.classDefinition.fullName !== '"ui/core/view".CustomLayoutView') {
+                    ClassWriter.writeCustomComponentAllowance(writer);
+                }
                 writer.endElement();
             }
             if (this.specialCaseWriter) {
