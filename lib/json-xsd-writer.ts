@@ -199,8 +199,10 @@ export class HardCodedItemsWriter implements SpecialCaseElementWriter {
                             xmlWriter.writeAttribute("maxOccurs", "1");
 
                             xmlWriter.startElement("xs:complexType")
-                                ClassWriter.writeUIComponentsChildGroup(xmlWriter, "1");
-                                ClassWriter.writeCustomComponentAllowance(xmlWriter);
+                                xmlWriter.startElement("xs:sequence");
+                                    ClassWriter.writeUIComponentsChildGroup(xmlWriter, "1");
+                                    ClassWriter.writeCustomComponentAllowance(xmlWriter);
+                                xmlWriter.endElement();
                             xmlWriter.endElement()
                         xmlWriter.endElement();
 
@@ -233,8 +235,10 @@ export class ItemsWriter implements SpecialCaseElementWriter {
                     xmlWriter.writeAttribute("maxOccurs", "1");
 
                     xmlWriter.startElement("xs:complexType");
-                        ClassWriter.writeUIComponentsChildGroup(xmlWriter);
-                        ClassWriter.writeCustomComponentAllowance(xmlWriter);
+                        xmlWriter.startElement("xs:sequence");
+                            ClassWriter.writeUIComponentsChildGroup(xmlWriter);
+                            ClassWriter.writeCustomComponentAllowance(xmlWriter);
+                        xmlWriter.endElement();
                     xmlWriter.endElement();
                 xmlWriter.endElement();
             }
