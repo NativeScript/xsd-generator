@@ -9,7 +9,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "gulp": "3.9.0",
-    "gulp-json-editor": "^2.2.1",
+    "gulp-exec": "2.1.2",
+    "gulp-json-editor": "2.2.1",
     "gulp-typescript": "2.8.0",
     "mocha": "2.2.5",
     "should": "7.0.2",
