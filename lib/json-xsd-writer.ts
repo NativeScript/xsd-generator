@@ -200,6 +200,7 @@ export class HardCodedItemsWriter implements SpecialCaseElementWriter {
 
                             xmlWriter.startElement("xs:complexType")
                                 ClassWriter.writeUIComponentsChildGroup(xmlWriter, "1");
+                                ClassWriter.writeCustomComponentAllowance(xmlWriter);
                             xmlWriter.endElement()
                         xmlWriter.endElement();
 
@@ -233,6 +234,7 @@ export class ItemsWriter implements SpecialCaseElementWriter {
 
                     xmlWriter.startElement("xs:complexType");
                         ClassWriter.writeUIComponentsChildGroup(xmlWriter);
+                        ClassWriter.writeCustomComponentAllowance(xmlWriter);
                     xmlWriter.endElement();
                 xmlWriter.endElement();
             }
@@ -277,6 +279,7 @@ export class PageActionBarWriter implements SpecialCaseElementWriter {
 
             xmlWriter.endElement();
             ClassWriter.writeUIComponentsChildGroup(xmlWriter, "1");
+            ClassWriter.writeCustomComponentAllowance(xmlWriter);
         xmlWriter.endElement();
     }
 }
@@ -385,6 +388,7 @@ export class ClassWriter {
                 } else {
                     ClassWriter.writeUIComponentsChildGroup(writer, "unbounded");
                 }
+                ClassWriter.writeCustomComponentAllowance(writer);
                 writer.endElement();
             }
             if (this.specialCaseWriter) {
@@ -407,6 +411,13 @@ export class ClassWriter {
         writer.writeAttribute("ref", "UIComponents");
         writer.writeAttribute("minOccurs", "0");
         writer.writeAttribute("maxOccurs", maxOccurs);
+        writer.endElement();
+    }
+
+    public static writeCustomComponentAllowance(writer: any) {
+        writer.startElement("xs:any");
+        writer.writeAttribute("processContents", "lax");
+        writer.writeAttribute("maxOccurs", "unbounded");
         writer.endElement();
     }
 
