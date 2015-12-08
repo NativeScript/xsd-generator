@@ -392,9 +392,7 @@ export class ClassWriter {
                 } else {
                     ClassWriter.writeUIComponentsChildGroup(writer, "unbounded");
                 }
-                if (this.classDefinition.fullName !== '"ui/core/view".CustomLayoutView') {
-                    ClassWriter.writeCustomComponentAllowance(writer);
-                }
+                ClassWriter.writeCustomComponentAllowance(writer);
                 writer.endElement();
             }
             if (this.specialCaseWriter) {
@@ -423,6 +421,7 @@ export class ClassWriter {
     public static writeCustomComponentAllowance(writer: any) {
         writer.startElement("xs:any");
         writer.writeAttribute("processContents", "lax");
+        writer.writeAttribute("minOccurs", "0");
         writer.writeAttribute("maxOccurs", "unbounded");
         writer.endElement();
     }
