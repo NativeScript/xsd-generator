@@ -450,12 +450,26 @@ export class ClassWriter {
                 new Property("top", new Type("number")),
                 new Property("dock", new Type("string")),
                 new Property("class", new Type("string")),
+                new Property("tap", new Type("string")),
+                new Property("ontap", new Type("string")),
+                new Property("doubletap", new Type("string")),
+                new Property("ondoubletap", new Type("string")),
+                new Property("longpress", new Type("string")),
+                new Property("onlongpress", new Type("string")),
+                new Property("pinch", new Type("string")),
+                new Property("onpinch", new Type("string")),
+                new Property("pan", new Type("string")),
+                new Property("onpan", new Type("string")),
+                new Property("swipe", new Type("string")),
+                new Property("onswipe", new Type("string")),
+                new Property("rotation", new Type("string")),
+                new Property("onrotation", new Type("string")),
             ]);
         } else if (this.classDefinition.name === "Image") {
             result = result.concat([
                 new Property("src", new Type("string")),
             ]);
-        } else if (this.classDefinition.name === "ListView") {
+        } else if (this.classDefinition.name === "ListView" || this.classDefinition.name === "Repeater") {
             result = result.concat([
                 new Property("items", new Type("string")),
             ]);
