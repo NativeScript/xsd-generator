@@ -434,7 +434,7 @@ export class ClassWriter {
     }
 
     public getProperties(): Property[] {
-        let result = this.classDefinition.properties;
+        let result = this.classDefinition.properties.filter(p=>p.name !== "tap");
         if (this.classDefinition.name === "GridLayout") {
             result = result.concat([
                 new Property("rows", new Type("string")),
