@@ -7,8 +7,6 @@ nbin () {
     PATH="$PATH:node_modules/.bin" "$@"
 }
 
-nbin tsd reinstall
-
 export NSREPO=${1:-../nativescript}
 # Don't rebuild tns-core-modules package
 export REBUILD=
