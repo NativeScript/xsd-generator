@@ -79,7 +79,13 @@ export class JsonXsdWriter {
             validatorWriter.write(writer);
         });
     }
-
+    
+    public getUILayoutWriters(classes: Class[]) {
+         return classes.filter((_class) =>
+             this.layoutComponents.has(_class.name)).map((_class) =>
+                 new UIComponentWriter(_class));
+    }
+     
     private writeUILayouts(writer: any, _classes: Class[]) {
         writer.startElement("xs:group");
         writer.writeAttribute("name", "UILayouts");
@@ -94,6 +100,21 @@ export class JsonXsdWriter {
     }
 }
 
+export class UIComponentWriter {
+     private isKebabCase: boolean;
+ 
+     public constructor(public classDefinition: Class, isKebabCase? : boolean) {
+         this.isKebabCase = isKebabCase;
+     }
+ 
+     public write(xmlWriter: any) {
+         xmlWriter.startElement("xs:element");
+         xmlWriter.writeAttribute("name", this.isKebabCase? this.classDefinition.kebabName : this.classDefinition.name);
+         xmlWriter.writeAttribute("type", this.classDefinition.name);
+         xmlWriter.endElement();
+     }
+}
+ 
 interface SpecialCaseElementWriter {
     elementName: string;
     write(xmlWriter: any): any;
