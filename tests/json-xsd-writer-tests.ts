@@ -42,30 +42,6 @@ describe("JsonXsdWriter", () => {
                 done();
             });
         });
-        it("Should exclude base types from UIComponents list", (done) => {
-            var goodClass = new Class("Class1Name", "Class1FullName", "Class1Comments", [new Type("Class1BaseClass1")]);
-            var tree = new Tree();
-            tree.addClass(goodClass);
-
-            let baseClasses = [
-                "View",
-                "CustomLayoutView",
-                "EditableTextBase",
-                "LayoutBase",
-                "Layout",
-                "TextBase",
-            ]
-            baseClasses.forEach((className) => {
-                var badClass = new Class(className, "FullName" + className, "Class1Comments", [new Type("Class1BaseClass1")]);
-                tree.addClass(badClass);
-            })
-
-            var writer = new JsonXsdWriter("1.5.0");
-            let uiWriters = writer.getUIComponentWriters(tree.Classes);
-
-            uiWriters.length.should.eql(1);
-            done()
-        })
         it("should create an attribute group with the properties of the class", () => {
             var writer = new JsonXsdWriter("1.5.0");
 
@@ -215,18 +191,6 @@ describe("ClassWriter", () => {
             itemsWriter.should.not.eql(null);
             itemsWriter.elementName.should.eql(_class.name + ".items");
         });
-    });
-    it("should create PageActionBarWriter, if needed", () => {
-        var pageClass = new Class("Page", '"ui/page".Page', "Class1Comments", [new Type("View")]);
-
-        let classWriter = new ClassWriter(pageClass, null)
-        let itemsWriter = classWriter.specialCaseWriter;
-        itemsWriter.should.not.eql(null);
-        itemsWriter.elementName.should.eql("Page.actionBar");
-
-        var nonPageClass = new Class("Button", '"ui/button".Button', "Class1Comments", [new Type("View")]);
-        let classWriterNoTemplate = new ClassWriter(nonPageClass, null);
-        (classWriterNoTemplate.specialCaseWriter == null).should.be.true;
     });
     it("should return ApplyXmlAttributes special properties", () => {
         var gridLayoutClass = new Class("GridLayout", '"ui/page".Page', "Class1Comments", [new Type("View")]);
