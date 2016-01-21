@@ -47,7 +47,6 @@ export class JsonXsdWriter {
 
         this.processClasses(writer, tree.Classes);
         this.writeValidators(writer, this.validatorFactory.getRegisteredValidators());
-        this.writeUIComponents(writer, tree.Classes);
         this.writeUILayouts(writer, tree.Classes);
         writer.endDocument();
         return writer.toString();
@@ -81,36 +80,6 @@ export class JsonXsdWriter {
         });
     }
 
-    public getUIComponentWriters(classes: Class[], isKebabCase?: boolean) {
-        return classes.filter((_class) =>
-            !this.excludedUIComponents.has(_class.name)).map((_class) =>
-                new UIComponentWriter(_class, isKebabCase));
-    }
-    
-    public getUILayoutWriters(classes: Class[]) {
-        return classes.filter((_class) =>
-            this.layoutComponents.has(_class.name)).map((_class) =>
-                new UIComponentWriter(_class));
-    }
-
-    private writeUIComponents(writer: any, _classes: Class[]) {
-        writer.startElement("xs:group");
-        writer.writeAttribute("name", "UIComponents");
-        writer.startElement("xs:choice");
-
-        this.getUIComponentWriters(_classes).forEach((uiWriter) => {
-            uiWriter.write(writer);
-        });
-
-        this.getUIComponentWriters(_classes, true).forEach((uiWriter) => {
-            debugger;
-            uiWriter.write(writer);
-        });
-
-        writer.endElement();
-        writer.endElement();
-    }
-
     private writeUILayouts(writer: any, _classes: Class[]) {
         writer.startElement("xs:group");
         writer.writeAttribute("name", "UILayouts");
@@ -122,21 +91,6 @@ export class JsonXsdWriter {
 
         writer.endElement();
         writer.endElement();
-    }
-}
-
-export class UIComponentWriter {
-    private isKebabCase: boolean;
-
-    public constructor(public classDefinition: Class, isKebabCase? : boolean) {
-        this.isKebabCase = isKebabCase;
-    }
-
-    public write(xmlWriter: any) {
-        xmlWriter.startElement("xs:element");
-        xmlWriter.writeAttribute("name", this.isKebabCase? this.classDefinition.kebabName : this.classDefinition.name);
-        xmlWriter.writeAttribute("type", this.classDefinition.name);
-        xmlWriter.endElement();
     }
 }
 
@@ -201,7 +155,6 @@ export class HardCodedItemsWriter implements SpecialCaseElementWriter {
                             xmlWriter.startElement("xs:complexType")
                                 xmlWriter.startElement("xs:sequence");
                                     ClassWriter.writeUIComponentsChildGroup(xmlWriter, "1");
-                                    ClassWriter.writeCustomComponentAllowance(xmlWriter);
                                 xmlWriter.endElement();
                             xmlWriter.endElement()
                         xmlWriter.endElement();
@@ -237,7 +190,6 @@ export class ItemsWriter implements SpecialCaseElementWriter {
                     xmlWriter.startElement("xs:complexType");
                         xmlWriter.startElement("xs:sequence");
                             ClassWriter.writeUIComponentsChildGroup(xmlWriter);
-                            ClassWriter.writeCustomComponentAllowance(xmlWriter);
                         xmlWriter.endElement();
                     xmlWriter.endElement();
                 xmlWriter.endElement();
@@ -253,37 +205,6 @@ export class ItemsWriter implements SpecialCaseElementWriter {
                     xmlWriter.endElement();
                 xmlWriter.endElement();
             }
-        xmlWriter.endElement();
-    }
-}
-
-export class PageActionBarWriter implements SpecialCaseElementWriter {
-    public elementName: string;
-
-    public constructor(public className: string) {
-        this.elementName = `${className}.actionBar`;
-    }
-
-    public write(xmlWriter: any) {
-        xmlWriter.startElement("xs:sequence");
-            xmlWriter.startElement("xs:element");
-                xmlWriter.writeAttribute("name", this.elementName);
-                xmlWriter.writeAttribute("minOccurs", "0");
-                xmlWriter.writeAttribute("maxOccurs", "1");
-
-                xmlWriter.startElement("xs:complexType");
-                    xmlWriter.startElement("xs:sequence");
-                        xmlWriter.startElement("xs:element");
-                            xmlWriter.writeAttribute("name", "ActionBar");
-                            xmlWriter.writeAttribute("type", "ActionBar");
-                            xmlWriter.writeAttribute("maxOccurs", "1");
-                        xmlWriter.endElement();
-                    xmlWriter.endElement();
-                xmlWriter.endElement();
-
-            xmlWriter.endElement();
-            ClassWriter.writeUIComponentsChildGroup(xmlWriter, "1");
-            ClassWriter.writeCustomComponentAllowance(xmlWriter);
         xmlWriter.endElement();
     }
 }
@@ -342,8 +263,6 @@ export class ClassWriter {
         if (!this.specialCaseWriter) {
             if (classDefinition.name == 'TabView' || classDefinition.name == 'SegmentedBar') {
                 this.specialCaseWriter = new HardCodedItemsWriter(this.classDefinition.name);
-            } else if (classDefinition.name == 'Page') {
-                this.specialCaseWriter = new PageActionBarWriter(this.classDefinition.name);
             } else if (classDefinition.name == 'ActionBar') {
                 this.specialCaseWriter = new ActionItemsWriter(this.classDefinition.name);
             }
@@ -357,12 +276,6 @@ export class ClassWriter {
     }
 
     private getBaseClass(): string {
-        if (this.classDefinition.name === "Page") {
-            // Skip the ContentView intermediate class to make the XSD schema work
-            // Duplicate its UIComponents group ref element
-            // emitted by PageActionBarWriter
-            return "View";
-        }
         return this.classDefinition.baseClassNames[0].name;
     }
 
@@ -392,7 +305,6 @@ export class ClassWriter {
                 } else {
                     ClassWriter.writeUIComponentsChildGroup(writer, "unbounded");
                 }
-                ClassWriter.writeCustomComponentAllowance(writer);
                 writer.endElement();
             }
             if (this.specialCaseWriter) {
@@ -411,18 +323,10 @@ export class ClassWriter {
     }
 
     public static writeUIComponentsChildGroup(writer: any, maxOccurs: string = "1") {
-        writer.startElement("xs:group");
-        writer.writeAttribute("ref", "UIComponents");
+        writer.startElement("xs:any");
+        writer.writeAttribute("processContents", "skip");
         writer.writeAttribute("minOccurs", "0");
         writer.writeAttribute("maxOccurs", maxOccurs);
-        writer.endElement();
-    }
-
-    public static writeCustomComponentAllowance(writer: any) {
-        writer.startElement("xs:any");
-        writer.writeAttribute("processContents", "lax");
-        writer.writeAttribute("minOccurs", "0");
-        writer.writeAttribute("maxOccurs", "unbounded");
         writer.endElement();
     }
 
