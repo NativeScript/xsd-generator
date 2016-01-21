@@ -44,10 +44,12 @@ export class JsonXsdWriter {
                 writer.writeAttribute(key, value);
             });
         }
+        
+        var classes = tree.Classes.filter(function(c){ return c.name !== "Layout"; });
 
-        this.processClasses(writer, tree.Classes);
+        this.processClasses(writer, classes);
         this.writeValidators(writer, this.validatorFactory.getRegisteredValidators());
-        this.writeUILayouts(writer, tree.Classes);
+        this.writeUILayouts(writer, classes);
         writer.endDocument();
         return writer.toString();
     }
