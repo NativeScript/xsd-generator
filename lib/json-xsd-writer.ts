@@ -347,6 +347,13 @@ export class ClassWriter {
     private _addClassType(writer: any) {
         this._addClassProperties(writer);
 
+        if (this.classDefinition.name === "Page") {
+            if (this.specialCaseWriter) {
+                this.specialCaseWriter.write(writer);
+            }
+            return;
+        }
+
         writer.startElement("xs:complexType");
         writer.writeAttribute("name", this.classDefinition.name);
 
