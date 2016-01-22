@@ -1,5 +1,4 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded">
-  <Page.actionBar>
     <ActionBar title="Title">
       <ActionBar.actionItems>
         <ActionItem text="left" />
@@ -7,7 +6,6 @@
         <ActionItem text="pop" />
       </ActionBar.actionItems>
     </ActionBar>
-  </Page.actionBar>
 
   <StackLayout>
     <Label text="The WebView component below will load a local HTML file with a path, starting with ~" cssClass="title"/>
