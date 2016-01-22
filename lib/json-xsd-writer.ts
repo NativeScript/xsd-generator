@@ -262,6 +262,45 @@ export class ActionItemsWriter implements SpecialCaseElementWriter {
     }
 }
 
+export class HardCodedPageWriter implements SpecialCaseElementWriter {
+    public elementName: string;
+
+    public constructor(public className: string) {
+        this.elementName = className;
+    }
+
+    public write(xmlWriter: any) {
+
+            xmlWriter.startElement("xs:complexType");
+                xmlWriter.writeAttribute("name", this.elementName);
+
+                xmlWriter.startElement("xs:complexContent");
+                
+                    xmlWriter.startElement("xs:extension");
+                        xmlWriter.writeAttribute("base", "View");
+                        
+                            xmlWriter.startElement("xs:sequence");
+
+                                xmlWriter.startElement("xs:element");
+                                    xmlWriter.writeAttribute("name", "ActionBar");
+                                    xmlWriter.writeAttribute("type", "ActionBar");
+                                    xmlWriter.writeAttribute("maxOccurs", "1");
+                                xmlWriter.endElement();
+                                
+                                 xmlWriter.startElement("xs:any");
+                                    xmlWriter.writeAttribute("maxOccurs", "1");
+                                xmlWriter.endElement();
+                                
+                            xmlWriter.endElement();
+
+                    xmlWriter.endElement();
+                    
+                xmlWriter.endElement();
+
+            xmlWriter.endElement();
+    }
+}
+
 export class ClassWriter {
     public specialCaseWriter: SpecialCaseElementWriter = null;
 
@@ -271,10 +310,10 @@ export class ClassWriter {
         let hasItemsLayout = false;
 
         properties.forEach((property) => {
-            if (property.name == 'itemTemplate') {
+            if (property.name === 'itemTemplate') {
                 hasItemTemplate = true;
             }
-            if (property.name == 'itemsLayout') {
+            if (property.name === 'itemsLayout') {
                 hasItemsLayout = true;
             }
         });
@@ -284,9 +323,12 @@ export class ClassWriter {
         }
 
         if (!this.specialCaseWriter) {
-            if (classDefinition.name == 'TabView' || classDefinition.name == 'SegmentedBar') {
+            if(classDefinition.name === 'Page'){
+                this.specialCaseWriter = new HardCodedPageWriter(this.classDefinition.name);
+            }
+            else if (classDefinition.name === 'TabView' || classDefinition.name === 'SegmentedBar') {
                 this.specialCaseWriter = new HardCodedItemsWriter(this.classDefinition.name);
-            } else if (classDefinition.name == 'ActionBar') {
+            } else if (classDefinition.name === 'ActionBar') {
                 this.specialCaseWriter = new ActionItemsWriter(this.classDefinition.name);
             }
         }
