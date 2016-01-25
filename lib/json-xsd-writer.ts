@@ -283,6 +283,7 @@ export class HardCodedPageWriter implements SpecialCaseElementWriter {
 
                                  xmlWriter.startElement("xs:any");
                                     xmlWriter.writeAttribute("maxOccurs", "2");
+                                    xmlWriter.writeAttribute("processContents", "skip");
                                 xmlWriter.endElement();
                                 
                             xmlWriter.endElement();
