@@ -44,7 +44,7 @@ export class JsonXsdWriter {
                 writer.writeAttribute(key, value);
             });
         }
-        
+
         var classes = tree.Classes.filter(function(c){ return c.name !== "Layout"; });
 
         this.processClasses(writer, classes);
@@ -81,13 +81,13 @@ export class JsonXsdWriter {
             validatorWriter.write(writer);
         });
     }
-    
+
     public getUILayoutWriters(classes: Class[]) {
          return classes.filter((_class) =>
              this.layoutComponents.has(_class.name)).map((_class) =>
                  new UIComponentWriter(_class));
     }
-     
+
     private writeUILayouts(writer: any, _classes: Class[]) {
         writer.startElement("xs:group");
         writer.writeAttribute("name", "UILayouts");
@@ -104,11 +104,11 @@ export class JsonXsdWriter {
 
 export class UIComponentWriter {
      private isKebabCase: boolean;
- 
+
      public constructor(public classDefinition: Class, isKebabCase? : boolean) {
          this.isKebabCase = isKebabCase;
      }
- 
+
      public write(xmlWriter: any) {
          xmlWriter.startElement("xs:element");
          xmlWriter.writeAttribute("name", this.isKebabCase? this.classDefinition.kebabName : this.classDefinition.name);
@@ -116,7 +116,7 @@ export class UIComponentWriter {
          xmlWriter.endElement();
      }
 }
- 
+
 interface SpecialCaseElementWriter {
     elementName: string;
     write(xmlWriter: any): any;
@@ -275,21 +275,21 @@ export class HardCodedPageWriter implements SpecialCaseElementWriter {
                 xmlWriter.writeAttribute("name", this.elementName);
 
                 xmlWriter.startElement("xs:complexContent");
-                
+
                     xmlWriter.startElement("xs:extension");
                         xmlWriter.writeAttribute("base", "View");
-                        
+
                             xmlWriter.startElement("xs:sequence");
 
                                  xmlWriter.startElement("xs:any");
                                     xmlWriter.writeAttribute("maxOccurs", "2");
                                     xmlWriter.writeAttribute("processContents", "skip");
                                 xmlWriter.endElement();
-                                
+
                             xmlWriter.endElement();
 
                     xmlWriter.endElement();
-                    
+
                 xmlWriter.endElement();
 
             xmlWriter.endElement();
