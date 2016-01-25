@@ -281,14 +281,8 @@ export class HardCodedPageWriter implements SpecialCaseElementWriter {
                         
                             xmlWriter.startElement("xs:sequence");
 
-                                xmlWriter.startElement("xs:element");
-                                    xmlWriter.writeAttribute("name", "ActionBar");
-                                    xmlWriter.writeAttribute("type", "ActionBar");
-                                    xmlWriter.writeAttribute("maxOccurs", "1");
-                                xmlWriter.endElement();
-                                
                                  xmlWriter.startElement("xs:any");
-                                    xmlWriter.writeAttribute("maxOccurs", "1");
+                                    xmlWriter.writeAttribute("maxOccurs", "2");
                                 xmlWriter.endElement();
                                 
                             xmlWriter.endElement();
